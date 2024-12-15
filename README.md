@@ -1,12 +1,12 @@
 # simple-task-app
 シンプルなタスク管理アプリケーション
 
-## 技術スタック
+## 環境
 * frontend
 * backend
-  * 言語: Go
+  * 言語: Go 1.23.4
   * Webフレームワーク: Echo
-  * ORM: 
+  * ORM: ent
 * database
   * PostgreSQL
 * infra
