@@ -1,0 +1,16 @@
+- id: 1
+  name: "user_a"
+  email: "user_a@example.com"
+  password: "passworda"
+- id: 2
+  name: "user_b"
+  email: "user_b@example.com"
+  password: "passwordb"
+- id: 3
+  name: "user_c"
+  email: "user_c@example.com"
+  password: "passwordc"
+- id: 4
+  name: "user_d"
+  email: "user_d@example.com"
+  password: "passwordd"
