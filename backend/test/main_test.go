@@ -47,7 +47,6 @@ func loadFixture(t *testing.T, path string) {
 		testfixtures.Database(testDB),
 		testfixtures.Dialect("postgres"),
 		testfixtures.Directory(path),
-		testfixtures.ResetSequencesTo(1),
 	)
 	if err != nil {
 		t.Fatal(err)

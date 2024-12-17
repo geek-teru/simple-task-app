@@ -38,7 +38,7 @@ func TestCreateUser(t *testing.T) {
 			name: "case: Success",
 			args: args{
 				user: &ent.User{
-					ID: 50, Name: "user_x", Email: "user_x@example.com", Password: "password",
+					Name: "user_x", Email: "user_x@example.com", Password: "password",
 				},
 			},
 			wantErr: nil,
@@ -48,7 +48,7 @@ func TestCreateUser(t *testing.T) {
 			name: "case: Duplicate error",
 			args: args{
 				user: &ent.User{
-					ID: 60, Name: "user_y", Email: "user_y@example.com", Password: "password",
+					Name: "user_y", Email: "user_a@example.com", Password: "password",
 				},
 			},
 			wantErr: nil,
