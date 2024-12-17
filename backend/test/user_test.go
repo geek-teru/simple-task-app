@@ -14,10 +14,11 @@ import (
 
 func TestCreateUser(t *testing.T) {
 	// fixture
-	absolutePath, err := filepath.Abs("fixtures")
+	absolutePath, err := filepath.Abs("testdata")
 	if err != nil {
 		t.Fatal("failed to get absolute path")
 	}
+	fmt.Println(absolutePath)
 
 	loadFixture(t, absolutePath)
 
@@ -37,7 +38,7 @@ func TestCreateUser(t *testing.T) {
 			name: "case: Success",
 			args: args{
 				user: &ent.User{
-					Name: "user_x", Email: "user_x@example.com", Password: "password",
+					ID: 50, Name: "user_x", Email: "user_x@example.com", Password: "password",
 				},
 			},
 			wantErr: nil,
@@ -47,7 +48,7 @@ func TestCreateUser(t *testing.T) {
 			name: "case: Duplicate error",
 			args: args{
 				user: &ent.User{
-					ID: 1, Name: "user_y", Email: "user_y@example.com", Password: "password",
+					ID: 60, Name: "user_y", Email: "user_y@example.com", Password: "password",
 				},
 			},
 			wantErr: nil,
@@ -60,6 +61,7 @@ func TestCreateUser(t *testing.T) {
 		fmt.Println(tt.name)
 
 		// test対象メソッドの実行
+		fmt.Println(tt.args.user)
 		gotErr := repo.CreateUser(context.Background(), tt.args.user)
 		fmt.Println(gotErr)
 		// 結果の比較
@@ -72,9 +74,9 @@ func TestCreateUser(t *testing.T) {
 	}
 }
 
-func TestGetTask(t *testing.T) {
+func TestGetUserByEmail(t *testing.T) {
 	// fixture
-	absolutePath, err := filepath.Abs("fixtures")
+	absolutePath, err := filepath.Abs("testdata")
 	if err != nil {
 		t.Fatal("failed to get absolute path")
 	}
@@ -118,7 +120,7 @@ func TestGetTask(t *testing.T) {
 				Email:    "user_a@example.com",
 				Password: "passworda",
 			},
-			wantErr: nil,
+			wantErr: fmt.Errorf("failed to get user by email (user_z@example.com) in repository: ent: user not found"),
 		},
 	}
 

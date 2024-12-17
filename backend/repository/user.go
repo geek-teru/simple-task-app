@@ -25,13 +25,13 @@ func NewUserRepository(client *ent.Client) UserRepositoryInterface {
 }
 
 func (r *userRepository) CreateUser(ctx context.Context, user *ent.User) error {
-	_, err := r.client.User.Create().
+	err := r.client.User.Create().
 		SetName(user.Name).
 		SetEmail(user.Email).
 		SetPassword(user.Password).
-		Save(ctx)
+		Exec(ctx)
 	if err != nil {
-		return fmt.Errorf("failed to create user: %w", err)
+		return fmt.Errorf("failed to create user in repository: %w", err)
 	}
 	return nil
 }
@@ -41,7 +41,7 @@ func (r *userRepository) GetUserByEmail(ctx context.Context, email string) (*ent
 		Where(user.EmailEQ(email)).
 		Only(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get user by email (%s): %w", email, err)
+		return nil, fmt.Errorf("failed to get user by email (%s) in repository: %w", email, err)
 	}
 	return user, nil
 }
@@ -53,7 +53,7 @@ func (r *userRepository) UpdateUser(ctx context.Context, user *ent.User) error {
 		SetPassword(user.Password).
 		Save(ctx)
 	if err != nil {
-		return fmt.Errorf("failed to update user: %w", err)
+		return fmt.Errorf("failed to update user in repository: %w", err)
 	}
 	return nil
 }
