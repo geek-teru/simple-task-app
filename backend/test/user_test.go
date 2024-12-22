@@ -74,7 +74,7 @@ func TestCreateUser(t *testing.T) {
 	}
 }
 
-func TestGetUserByEmail(t *testing.T) {
+func TestGetUserById(t *testing.T) {
 	// fixture
 	absolutePath, err := filepath.Abs("testdata")
 	if err != nil {
@@ -84,7 +84,7 @@ func TestGetUserByEmail(t *testing.T) {
 	loadFixture(t, absolutePath)
 
 	type args struct {
-		email string
+		id int
 	}
 
 	// テストケース
@@ -98,7 +98,7 @@ func TestGetUserByEmail(t *testing.T) {
 			// 正常系
 			name: "case: Success",
 			args: args{
-				email: "user_a@example.com",
+				id: 1,
 			},
 			want: &ent.User{
 				ID:       1,
@@ -112,7 +112,7 @@ func TestGetUserByEmail(t *testing.T) {
 			// 異常系
 			name: "case: No data error",
 			args: args{
-				email: "user_z@example.com",
+				id: 99,
 			},
 			want: &ent.User{
 				ID:       1,
@@ -120,7 +120,7 @@ func TestGetUserByEmail(t *testing.T) {
 				Email:    "user_a@example.com",
 				Password: "passworda",
 			},
-			wantErr: fmt.Errorf("failed to get user by email (user_z@example.com) in repository: ent: user not found"),
+			wantErr: fmt.Errorf("failed to get user by id (99) in repository: ent: user not found"),
 		},
 	}
 
@@ -130,14 +130,14 @@ func TestGetUserByEmail(t *testing.T) {
 		fmt.Println(tt.name)
 
 		// test対象メソッドの実行
-		got, gotErr := repo.GetUserByEmail(context.Background(), tt.args.email)
+		got, gotErr := repo.GetUserById(context.Background(), tt.args.id)
 		fmt.Println(got)
 		// 結果の比較
 		if tt.wantErr != nil || gotErr != nil {
 			if diff := cmp.Diff(got, tt.want); diff != "" {
 				t.Errorf("[FAIL]return error mismatch\n gotErr = %v,\n wantErr= %v\n", gotErr, tt.wantErr)
 			}
-			if !errors.Is(gotErr, tt.wantErr) {
+			if diff := cmp.Diff(gotErr.Error(), tt.wantErr.Error()); diff != "" {
 				t.Errorf("[FAIL]return error mismatch\n gotErr = %v,\n wantErr= %v\n", gotErr, tt.wantErr)
 			}
 		}
