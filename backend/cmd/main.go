@@ -6,7 +6,11 @@ import (
 	"os"
 
 	"github.com/geek-teru/simple-task-app/db"
+	"github.com/geek-teru/simple-task-app/handler"
+	"github.com/geek-teru/simple-task-app/repository"
 	"github.com/geek-teru/simple-task-app/router"
+	"github.com/geek-teru/simple-task-app/service"
+	echo "github.com/labstack/echo/v4"
 )
 
 func main() {
@@ -30,8 +34,16 @@ func main() {
 		}
 	}
 
+	// User
+	userRepo := repository.NewUserRepository(client)
+	userService := service.NewUserService(userRepo)
+	userHandler := handler.NewUserHandler(userService)
+
+	e := echo.New()
+	// e.HideBanner = true
+	router.NewRouter(e, *userHandler)
+
 	// Server startup
-	e := router.NewRouter()
 	if err := e.Start(":8080"); err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 		os.Exit(1)
