@@ -1,0 +1,46 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres.local
+    environment:
+      POSTGRES_DB: sampledb
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    volumes:
+      - ./db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: always
+  migrate:
+    container_name: migrate.local
+    build:
+      context: ./backend
+      dockerfile: ./Dockerfile
+    environment:
+      - DB_USER=admin
+      - DB_PASSWORD=admin
+      - DB_ADDR=postgres.local
+      - DB_PORT=5432
+      - DB_NAME=sampledb
+    command: ./main migrate
+    depends_on:
+      - postgres
+  backend:
+    container_name: backend.local
+    build:
+      context: ./backend
+      dockerfile: ./Dockerfile
+    environment:
+      - DB_USER=admin
+      - DB_PASSWORD=admin
+      - DB_ADDR=postgres.local
+      - DB_PORT=5432
+      - DB_NAME=sampledb
+    ports:
+      - "8080:8080"
+    command: ./main
+    depends_on:
+      - postgres
+      - migrate
