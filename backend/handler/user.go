@@ -6,22 +6,22 @@ import (
 	"strconv"
 
 	echo "github.com/labstack/echo/v4"
-	// zap "go.uber.org/zap"
+	zap "go.uber.org/zap"
 
 	"github.com/geek-teru/simple-task-app/service"
 )
 
 type UserHandler struct {
 	Service service.UserServiceInterface
-	// logger    *zap.Logger
+	logger  *zap.Logger
 	// validator *validator.Validate
 }
 
 // func NewUserHandler(service service.UserServiceInterface, log *zap.Logger) *UserHandler {
-func NewUserHandler(service service.UserServiceInterface) *UserHandler {
+func NewUserHandler(service service.UserServiceInterface, log *zap.Logger) *UserHandler {
 	return &UserHandler{
 		Service: service,
-		// logger:    log,
+		logger:  log,
 		// validator: validator.New(),
 	}
 }
@@ -31,13 +31,13 @@ func (h *UserHandler) Create(c echo.Context) error {
 	UserReq := &service.UserRequest{}
 	if err := c.Bind(UserReq); err != nil {
 		err = fmt.Errorf("failed handler.CreateUser: %v", err)
-		// h.logger.Error("[ERROR] CreateUser", zap.Error(err))
+		h.logger.Error("[ERROR] CreateUser", zap.Error(err))
 		return c.JSON(http.StatusBadRequest, "Bad Request")
 	}
 
 	// Serviceの呼び出し
 	if err := h.Service.CreateUser(UserReq); err != nil {
-		// h.logger.Error("[ERROR] CreateUser", zap.Error(err))
+		h.logger.Error("[ERROR] CreateUser", zap.Error(err))
 		return c.JSON(http.StatusInternalServerError, nil)
 	}
 
@@ -50,7 +50,7 @@ func (h *UserHandler) GetById(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		err = fmt.Errorf("failed handler.GetUser: %v", err)
-		// h.logger.Error("[ERROR] GetUser", zap.Error(err))
+		h.logger.Error("[ERROR] GetUser", zap.Error(err))
 		return c.JSON(http.StatusBadRequest, "Bad Request")
 	}
 
@@ -65,7 +65,7 @@ func (h *UserHandler) GetById(c echo.Context) error {
 	// Serviceの呼び出し
 	UserRes, err := h.Service.GetUserById(id)
 	if err != nil {
-		// h.logger.Error("[ERROR] GetUser", zap.Error(err))
+		h.logger.Error("[ERROR] GetUser", zap.Error(err))
 		return c.JSON(http.StatusNotFound, "Not Found")
 	}
 	return c.JSON(http.StatusOK, UserRes)
@@ -76,7 +76,7 @@ func (h *UserHandler) Update(c echo.Context) error {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		err = fmt.Errorf("failed handler.UpdateUser: %v", err)
-		// h.logger.Error("[ERROR] UpdateUser", zap.Error(err))
+		h.logger.Error("[ERROR] UpdateUser", zap.Error(err))
 		return c.JSON(http.StatusBadRequest, "Bad Request")
 	}
 
@@ -84,14 +84,14 @@ func (h *UserHandler) Update(c echo.Context) error {
 	UserReq := new(service.UserRequest)
 	if err := c.Bind(UserReq); err != nil {
 		err = fmt.Errorf("failed handler.UpdateUser: %v", err)
-		// h.logger.Error("[ERROR] UpdateUser", zap.Error(err))
+		h.logger.Error("[ERROR] UpdateUser", zap.Error(err))
 		return c.JSON(http.StatusBadRequest, "Bad Request")
 	}
 
 	// Serviceの呼び出し
 	err = h.Service.UpdateUser(UserReq, id)
 	if err != nil {
-		// h.logger.Error("[ERROR] UpdateUser", zap.Error(err))
+		h.logger.Error("[ERROR] UpdateUser", zap.Error(err))
 		return c.JSON(http.StatusNotFound, "Not Found")
 	}
 
