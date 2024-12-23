@@ -21,10 +21,10 @@ services:
     environment:
       - DB_USER=admin
       - DB_PASSWORD=admin
-      - DB_ADDR=postgres.local
+      - DB_HOST=postgres.local
       - DB_PORT=5432
       - DB_NAME=sampledb
-    command: ./main migrate
+    entrypoint: [ "./main", "migrate" ]
     depends_on:
       - postgres
   backend:
@@ -35,7 +35,7 @@ services:
     environment:
       - DB_USER=admin
       - DB_PASSWORD=admin
-      - DB_ADDR=postgres.local
+      - DB_HOST=postgres.local
       - DB_PORT=5432
       - DB_NAME=sampledb
     ports:
