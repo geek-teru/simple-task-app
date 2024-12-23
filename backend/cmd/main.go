@@ -32,21 +32,20 @@ func main() {
 		if err := client.Schema.Create(context.Background()); err != nil {
 			log.Fatalf("Failed to creating schema resources: %v", err)
 		}
+	} else {
+		// User
+		userRepo := repository.NewUserRepository(client)
+		userService := service.NewUserService(userRepo)
+		userHandler := handler.NewUserHandler(userService)
+
+		e := echo.New()
+		// e.HideBanner = true
+		router.NewRouter(e, *userHandler)
+
+		// Server startup
+		if err := e.Start(":8080"); err != nil {
+			log.Fatalf("Failed to start server: %v", err)
+			os.Exit(1)
+		}
 	}
-
-	// User
-	userRepo := repository.NewUserRepository(client)
-	userService := service.NewUserService(userRepo)
-	userHandler := handler.NewUserHandler(userService)
-
-	e := echo.New()
-	// e.HideBanner = true
-	router.NewRouter(e, *userHandler)
-
-	// Server startup
-	if err := e.Start(":8080"); err != nil {
-		log.Fatalf("Failed to start server: %v", err)
-		os.Exit(1)
-	}
-
 }

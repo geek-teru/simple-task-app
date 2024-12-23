@@ -32,6 +32,8 @@ go generate ./ent
 ```
 docker-compose up -d
 
+# delete
+docker-compose down --rmi all --volumes --remove-orphans
 ```
 
 ## マイグレーション
@@ -58,4 +60,22 @@ docker exec -it postgres.local psql -U admin -d sampledb -c "select * from users
 ----+------+-------+----------
 (0 rows)
 
+```
+
+## テストの実行
+```
+go test -v ./...
+```
+
+## サーバー起動
+```
+go run main.go
+
+```
+
+## 動作確認用リクエスト
+```
+curl -X GET  http://localhost:8080/healthcheck
+curl -X POST  http://localhost:8080/user -H "Content-Type: application/json" -d '{"Name": "user_x", "Email": "user_x@example.com", "Password": "password"}'
+curl -X GET  http://localhost:8080/user/1
 ```
