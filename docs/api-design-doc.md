@@ -8,11 +8,10 @@
 ```
 project/
 ├── cmd/
-│   └── server/                # アプリケーションエントリポイント
-│       └── main.go            # メインファイル
+│   └── main.go     # メインファイル                
 │
 ├── internal/
-│   ├── model/                 # ドメインモデルやエンティティ
+│   ├── ent/                 # ドメインモデルやエンティティ
 │   │   └── task.go            # Taskエンティティ
 │   ├── repository/            # リポジトリ層 (データアクセス)
 │   │   └── task_repository.go # リポジトリインターフェース
@@ -22,10 +21,13 @@ project/
 │   │   └── task_handler.go    # HTTPハンドラー
 │   ├── router/                # ルーティング設定
 │   │   └── router.go          # ルーティング処理
-│   └── config/                # 設定管理
-│       └── config.go          # 設定情報
+│   ├── config/                # 設定管理
+│   │   └── config.go          # 設定情報
+│   └── test/                  # テスト用
 │
 ├── pkg/                       # 再利用可能なパッケージ
+│   ├── db/                # 設定管理
+│   │   └── db.go          # 設定情報
 │   └── logger/                # ロギングユーティリティ
 │       └── logger.go
 ```
