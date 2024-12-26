@@ -4,54 +4,36 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"path/filepath"
 	"testing"
 
 	"github.com/geek-teru/simple-task-app/ent"
 	"github.com/geek-teru/simple-task-app/repository"
+	"github.com/geek-teru/simple-task-app/testdata"
 	cmp "github.com/google/go-cmp/cmp"
 )
 
 func TestCreateUser(t *testing.T) {
-	// fixture
-	absolutePath, err := filepath.Abs("testdata")
-	if err != nil {
-		t.Fatal("failed to get absolute path")
-	}
-	fmt.Println(absolutePath)
 
-	loadFixture(t, absolutePath)
-
-	type args struct {
-		user *ent.User
-	}
+	// fixturesの投入
+	loadFixture(t)
 
 	// テストケース
 	tests := []struct {
 		name    string
-		args    args
-		want    string
-		wantErr error
+		args    *ent.User
+		wanterr error
 	}{
 		{
 			// 正常系
-			name: "case: Success",
-			args: args{
-				user: &ent.User{
-					Name: "user_x", Email: "user_x@example.com", Password: "password",
-				},
-			},
-			wantErr: nil,
+			name:    "case: Success",
+			args:    testdata.UserTestData[1],
+			wanterr: nil,
 		},
 		{
-			// 異常系
-			name: "case: Duplicate error",
-			args: args{
-				user: &ent.User{
-					Name: "user_y", Email: "user_a@example.com", Password: "password",
-				},
-			},
-			wantErr: nil,
+			// 異常系: 一意制約違反
+			name:    "case: Duplicate error",
+			args:    testdata.UserTestData[0],
+			wanterr: nil,
 		},
 	}
 
@@ -59,68 +41,46 @@ func TestCreateUser(t *testing.T) {
 
 	for _, tt := range tests {
 		fmt.Println(tt.name)
-
-		// test対象メソッドの実行
-		fmt.Println(tt.args.user)
-		gotErr := repo.CreateUser(context.Background(), tt.args.user)
-		fmt.Println(gotErr)
+		//fmt.Println(tt.args) //debug
+		goterr := repo.CreateUser(context.Background(), tt.args)
+		fmt.Println(got)
 		// 結果の比較
-		if tt.wantErr != nil || gotErr != nil { // wantとgotのどちらかがnilでない場合
-			if !errors.Is(gotErr, tt.wantErr) {
-				t.Errorf("[FAIL] return error mismatch\n gotErr = %v,\n wantErr= %v\n", gotErr, tt.wantErr)
+		if tt.wanterr == nil && goterr == nil {
+			// 正常
+			fmt.Println("normal")
+		} else {
+			if !errors.Is(goterr, tt.wanterr) {
+				t.Errorf("[FAIL] return error mismatch\n goterr = %v,\n wanterr= %v\n", goterr, tt.wanterr)
 			}
 		}
-		fmt.Println("--------------------------------------------------------------------------------")
 	}
 }
 
 func TestGetUserById(t *testing.T) {
-	// fixture
-	absolutePath, err := filepath.Abs("testdata")
-	if err != nil {
-		t.Fatal("failed to get absolute path")
-	}
 
-	loadFixture(t, absolutePath)
-
-	type args struct {
-		id int
-	}
+	// fixturesの投入
+	loadFixture(t)
 
 	// テストケース
 	tests := []struct {
 		name    string
-		args    args
+		args    *ent.User
 		want    *ent.User
-		wantErr error
+		wanterr error
 	}{
 		{
 			// 正常系
-			name: "case: Success",
-			args: args{
-				id: 1,
-			},
-			want: &ent.User{
-				ID:       1,
-				Name:     "user_a",
-				Email:    "user_a@example.com",
-				Password: "passworda",
-			},
-			wantErr: nil,
+			name:    "case: Success",
+			args:    testdata.UserTestData[0],
+			want:    testdata.UserTestData[0],
+			wanterr: nil,
 		},
 		{
-			// 異常系
-			name: "case: No data error",
-			args: args{
-				id: 99,
-			},
-			want: &ent.User{
-				ID:       1,
-				Name:     "user_a",
-				Email:    "user_a@example.com",
-				Password: "passworda",
-			},
-			wantErr: fmt.Errorf("failed to get user by id (99) in repository: ent: user not found"),
+			// 異常系: 存在しないデータ
+			name:    "case: Duplicate error",
+			args:    testdata.UserTestData[1],
+			want:    nil,
+			wanterr: nil,
 		},
 	}
 
@@ -130,17 +90,23 @@ func TestGetUserById(t *testing.T) {
 		fmt.Println(tt.name)
 
 		// test対象メソッドの実行
-		got, gotErr := repo.GetUserById(context.Background(), tt.args.id)
-		fmt.Println(got)
+		got, goterr := repo.GetUserById(context.Background(), tt.args.ID)
+		// fmt.Println(got)
+
 		// 結果の比較
-		if tt.wantErr != nil || gotErr != nil {
+		if tt.wanterr == nil && goterr == nil {
+			// 正常
+			fmt.Println("normal")
 			if diff := cmp.Diff(got, tt.want); diff != "" {
-				t.Errorf("[FAIL]return error mismatch\n gotErr = %v,\n wantErr= %v\n", gotErr, tt.wantErr)
+				t.Errorf("[FAIL]return error mismatch\n goterr = %v,\n anterr= %v\n", goterr, tt.wanterr)
 			}
-			if diff := cmp.Diff(gotErr.Error(), tt.wantErr.Error()); diff != "" {
-				t.Errorf("[FAIL]return error mismatch\n gotErr = %v,\n wantErr= %v\n", gotErr, tt.wantErr)
+		} else {
+			// 異常
+			if diff := cmp.Diff(goterr.Error(), tt.wanterr.Error()); diff != "" {
+				fmt.Println("exception")
+				t.Errorf("[FAIL]return error mismatch\n goterr = %v,\n anterr= %v\n", goterr, tt.wanterr)
 			}
 		}
-		fmt.Println("--------------------------------------------------------------------------------")
+		//fmt.Println("--------------------------------------------------------------------------------")
 	}
 }
