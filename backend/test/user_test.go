@@ -2,7 +2,6 @@ package repository_test
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"testing"
 
@@ -10,6 +9,7 @@ import (
 	"github.com/geek-teru/simple-task-app/repository"
 	"github.com/geek-teru/simple-task-app/testdata"
 	cmp "github.com/google/go-cmp/cmp"
+	cmpopts "github.com/google/go-cmp/cmp/cmpopts"
 )
 
 func TestCreateUser(t *testing.T) {
@@ -33,7 +33,7 @@ func TestCreateUser(t *testing.T) {
 			// 異常系: 一意制約違反
 			name:    "case: Duplicate error",
 			args:    testdata.UserTestData[0],
-			wanterr: nil,
+			wanterr: fmt.Errorf("failed to create user in repository: ent: constraint failed: pq: duplicate key value violates unique constraint \"users_email_key\""),
 		},
 	}
 
@@ -43,14 +43,17 @@ func TestCreateUser(t *testing.T) {
 		fmt.Println(tt.name)
 		//fmt.Println(tt.args) //debug
 		goterr := repo.CreateUser(context.Background(), tt.args)
-		fmt.Println(got)
+		//fmt.Println(goterr)
+
 		// 結果の比較
 		if tt.wanterr == nil && goterr == nil {
 			// 正常
-			fmt.Println("normal")
+			fmt.Println("OK")
 		} else {
-			if !errors.Is(goterr, tt.wanterr) {
+			if goterr.Error() != tt.wanterr.Error() {
 				t.Errorf("[FAIL] return error mismatch\n goterr = %v,\n wanterr= %v\n", goterr, tt.wanterr)
+			} else {
+				fmt.Println("OK")
 			}
 		}
 	}
@@ -80,7 +83,7 @@ func TestGetUserById(t *testing.T) {
 			name:    "case: Duplicate error",
 			args:    testdata.UserTestData[1],
 			want:    nil,
-			wanterr: nil,
+			wanterr: fmt.Errorf("failed to get user by id (99) in repository: ent: user not found"),
 		},
 	}
 
@@ -96,17 +99,18 @@ func TestGetUserById(t *testing.T) {
 		// 結果の比較
 		if tt.wanterr == nil && goterr == nil {
 			// 正常
-			fmt.Println("normal")
-			if diff := cmp.Diff(got, tt.want); diff != "" {
-				t.Errorf("[FAIL]return error mismatch\n goterr = %v,\n anterr= %v\n", goterr, tt.wanterr)
+			if diff := cmp.Diff(got, tt.want, cmpopts.IgnoreUnexported(ent.User{})); diff != "" {
+				t.Errorf("[FAIL]return mismatch\n got = %v,\n want= %v\n", got, tt.want)
+			} else {
+				fmt.Println("OK")
 			}
 		} else {
 			// 異常
-			if diff := cmp.Diff(goterr.Error(), tt.wanterr.Error()); diff != "" {
-				fmt.Println("exception")
-				t.Errorf("[FAIL]return error mismatch\n goterr = %v,\n anterr= %v\n", goterr, tt.wanterr)
+			if goterr.Error() != tt.wanterr.Error() {
+				t.Errorf("[FAIL] return error mismatch\n goterr = %v,\n wanterr= %v\n", goterr, tt.wanterr)
+			} else {
+				fmt.Println("OK")
 			}
 		}
-		//fmt.Println("--------------------------------------------------------------------------------")
 	}
 }
