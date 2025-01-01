@@ -65,6 +65,7 @@ docker exec -it postgres.local psql -U admin -d sampledb -c "select * from users
 ## テストの実行
 ```
 go test -v ./...
+go test -v ./test
 ```
 
 ## サーバー起動
