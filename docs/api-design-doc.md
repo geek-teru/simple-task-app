@@ -8,27 +8,25 @@
 ```
 project/
 ├── cmd/
-│   └── main.go     # メインファイル                
+│   └── main.go            # メインファイル                
+├── ent/                   # ドメインモデルやエンティティ
+│   └── task.go            # Taskエンティティ
+├── repository/            # リポジトリ層 (データアクセス)
+│   └── task_repository.go # リポジトリインターフェース
+├── service/               # サービス層 (ビジネスロジック)
+│   └── task_service.go    # タスクのビジネスロジック
+├── handler/               # ハンドラー層 (プレゼンテーション層)
+│   └── task_handler.go    # HTTPハンドラー
+├── router/                # ルーティング設定
+│   └── router.go          # ルーティング処理
+├── config/                # 設定管理
+│   └── config.go          # 設定情報
+├── test/                  # テスト用
 │
-├── internal/
-│   ├── ent/                 # ドメインモデルやエンティティ
-│   │   └── task.go            # Taskエンティティ
-│   ├── repository/            # リポジトリ層 (データアクセス)
-│   │   └── task_repository.go # リポジトリインターフェース
-│   ├── service/               # サービス層 (ビジネスロジック)
-│   │   └── task_service.go    # タスクのビジネスロジック
-│   ├── handler/               # ハンドラー層 (プレゼンテーション層)
-│   │   └── task_handler.go    # HTTPハンドラー
-│   ├── router/                # ルーティング設定
-│   │   └── router.go          # ルーティング処理
-│   ├── config/                # 設定管理
-│   │   └── config.go          # 設定情報
-│   └── test/                  # テスト用
-│
-├── pkg/                       # 再利用可能なパッケージ
-│   ├── db/                    # DB接続用パッケージ
+├── pkg/                   # 再利用可能なパッケージ
+│   ├── db/                # DB接続用パッケージ
 │   │   └── db.go              
-│   └── logger/                # ロギングユーティリティ
+│   └── logger/            # ロギングユーティリティ
 │       └── logger.go
 ```
 
