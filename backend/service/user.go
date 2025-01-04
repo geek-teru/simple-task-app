@@ -8,9 +8,9 @@ import (
 )
 
 type UserServiceInterface interface {
-	CreateUser(UserReq *UserRequest) error
+	CreateUser(UserReq *UserRequest) (UserResponse, error)
 	GetUserById(id int) (UserResponse, error)
-	UpdateUser(UserReq *UserRequest, id int) error
+	UpdateUser(UserReq *UserRequest, id int) (UserResponse, error)
 }
 
 type (
@@ -25,10 +25,8 @@ type (
 	}
 
 	UserResponse struct {
-		ID       int    `json:"id"`
-		Name     string `json:"name"`
-		Email    string `json:"email"`
-		Password string `json:"password"`
+		ID   int    `json:"id"`
+		Name string `json:"name"`
 	}
 )
 
@@ -38,37 +36,46 @@ func NewUserService(repo repository.UserRepositoryInterface) UserServiceInterfac
 	}
 }
 
-func (u *UserService) CreateUser(UserReq *UserRequest) error {
-	user := &ent.User{Name: UserReq.Name, Email: UserReq.Email, Password: UserReq.Password}
-	err := u.repo.CreateUser(context.Background(), user)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (u *UserService) GetUserById(id int) (UserResponse, error) {
-	user, err := u.repo.GetUserById(context.Background(), id)
+func (u *UserService) CreateUser(userReq *UserRequest) (UserResponse, error) {
+	user := &ent.User{Name: userReq.Name, Email: userReq.Email, Password: userReq.Password}
+	createdUser, err := u.repo.CreateUser(context.Background(), user)
 	if err != nil {
 		return UserResponse{}, err
 	}
 
-	UserRes := UserResponse{
-		ID:       int(user.ID),
-		Name:     user.Name,
-		Email:    user.Email,
-		Password: user.Password,
+	userRes := UserResponse{
+		ID:   int(createdUser.ID),
+		Name: createdUser.Name,
 	}
 
-	return UserRes, nil
+	return userRes, nil
 }
 
-func (u *UserService) UpdateUser(UserReq *UserRequest, id int) error {
-	user := &ent.User{Name: UserReq.Name, Email: UserReq.Email, Password: UserReq.Password}
-	err := u.repo.UpdateUser(context.Background(), user, id)
+func (u *UserService) GetUserById(id int) (UserResponse, error) {
+	gotUser, err := u.repo.GetUserById(context.Background(), id)
 	if err != nil {
-		return err
+		return UserResponse{}, err
 	}
 
-	return nil
+	userRes := UserResponse{
+		ID:   int(gotUser.ID),
+		Name: gotUser.Name,
+	}
+
+	return userRes, nil
+}
+
+func (u *UserService) UpdateUser(UserReq *UserRequest, id int) (UserResponse, error) {
+	user := &ent.User{Name: UserReq.Name, Email: UserReq.Email, Password: UserReq.Password}
+	updatedUser, err := u.repo.UpdateUser(context.Background(), user, id)
+	if err != nil {
+		return UserResponse{}, err
+	}
+
+	userRes := UserResponse{
+		ID:   int(updatedUser.ID),
+		Name: updatedUser.Name,
+	}
+
+	return userRes, nil
 }
