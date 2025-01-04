@@ -9,9 +9,9 @@ import (
 )
 
 type UserRepositoryInterface interface {
-	CreateUser(ctx context.Context, user *ent.User) error
+	CreateUser(ctx context.Context, user *ent.User) (*ent.User, error)
 	GetUserById(ctx context.Context, id int) (*ent.User, error)
-	UpdateUser(ctx context.Context, user *ent.User, id int) error
+	UpdateUser(ctx context.Context, user *ent.User, id int) (*ent.User, error)
 }
 
 type userRepository struct {
@@ -24,16 +24,16 @@ func NewUserRepository(client *ent.Client) UserRepositoryInterface {
 	}
 }
 
-func (r *userRepository) CreateUser(ctx context.Context, user *ent.User) error {
-	err := r.client.User.Create().
+func (r *userRepository) CreateUser(ctx context.Context, user *ent.User) (*ent.User, error) {
+	user, err := r.client.User.Create().
 		SetName(user.Name).
 		SetEmail(user.Email).
 		SetPassword(user.Password).
-		Exec(ctx)
+		Save(ctx)
 	if err != nil {
-		return fmt.Errorf("failed to create user in repository: %w", err)
+		return nil, fmt.Errorf("failed to create user in repository: %w", err)
 	}
-	return nil
+	return user, nil
 }
 
 func (r *userRepository) GetUserById(ctx context.Context, id int) (*ent.User, error) {
@@ -46,14 +46,14 @@ func (r *userRepository) GetUserById(ctx context.Context, id int) (*ent.User, er
 	return user, nil
 }
 
-func (r *userRepository) UpdateUser(ctx context.Context, user *ent.User, id int) error {
-	_, err := r.client.User.UpdateOneID(id).
+func (r *userRepository) UpdateUser(ctx context.Context, user *ent.User, id int) (*ent.User, error) {
+	user, err := r.client.User.UpdateOneID(id).
 		SetName(user.Name).
 		SetEmail(user.Email).
 		SetPassword(user.Password).
 		Save(ctx)
 	if err != nil {
-		return fmt.Errorf("failed to update user in repository: %w", err)
+		return nil, fmt.Errorf("failed to update user in repository: %w", err)
 	}
-	return nil
+	return user, nil
 }
