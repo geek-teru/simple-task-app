@@ -25,7 +25,7 @@ func NewUserRepository(client *ent.Client) UserRepositoryInterface {
 }
 
 func (r *userRepository) CreateUser(ctx context.Context, user *ent.User) (*ent.User, error) {
-	user, err := r.client.User.Create().
+	createdUser, err := r.client.User.Create().
 		SetName(user.Name).
 		SetEmail(user.Email).
 		SetPassword(user.Password).
@@ -33,21 +33,21 @@ func (r *userRepository) CreateUser(ctx context.Context, user *ent.User) (*ent.U
 	if err != nil {
 		return nil, fmt.Errorf("failed to create user in repository: %w", err)
 	}
-	return user, nil
+	return createdUser, nil
 }
 
 func (r *userRepository) GetUserById(ctx context.Context, id int) (*ent.User, error) {
-	user, err := r.client.User.Query().
+	gotUser, err := r.client.User.Query().
 		Where(user.IDEQ(id)).
 		Only(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user by id (%d) in repository: %w", id, err)
 	}
-	return user, nil
+	return gotUser, nil
 }
 
 func (r *userRepository) UpdateUser(ctx context.Context, user *ent.User, id int) (*ent.User, error) {
-	user, err := r.client.User.UpdateOneID(id).
+	updatedUser, err := r.client.User.UpdateOneID(id).
 		SetName(user.Name).
 		SetEmail(user.Email).
 		SetPassword(user.Password).
@@ -55,5 +55,5 @@ func (r *userRepository) UpdateUser(ctx context.Context, user *ent.User, id int)
 	if err != nil {
 		return nil, fmt.Errorf("failed to update user in repository: %w", err)
 	}
-	return user, nil
+	return updatedUser, nil
 }

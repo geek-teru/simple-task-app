@@ -36,12 +36,13 @@ func (h *UserHandler) Create(c echo.Context) error {
 	}
 
 	// Serviceの呼び出し
-	if err := h.Service.CreateUser(UserReq); err != nil {
+	userRes, err := h.Service.CreateUser(UserReq)
+	if err != nil {
 		h.logger.Error("[ERROR] CreateUser", zap.Error(err))
 		return c.JSON(http.StatusInternalServerError, nil)
 	}
 
-	return c.JSON(http.StatusCreated, nil)
+	return c.JSON(http.StatusCreated, userRes)
 }
 
 func (h *UserHandler) GetById(c echo.Context) error {
@@ -89,11 +90,11 @@ func (h *UserHandler) Update(c echo.Context) error {
 	}
 
 	// Serviceの呼び出し
-	err = h.Service.UpdateUser(UserReq, id)
+	userRes, err := h.Service.UpdateUser(UserReq, id)
 	if err != nil {
 		h.logger.Error("[ERROR] UpdateUser", zap.Error(err))
 		return c.JSON(http.StatusNotFound, "Not Found")
 	}
 
-	return c.JSON(http.StatusOK, nil)
+	return c.JSON(http.StatusOK, userRes)
 }
