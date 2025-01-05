@@ -8,6 +8,7 @@ require (
 	entgo.io/ent v0.14.1
 	github.com/caarlos0/env/v7 v7.1.0
 	github.com/go-testfixtures/testfixtures/v3 v3.13.0
+	github.com/golang/mock v1.6.0
 	github.com/google/go-cmp v0.6.0
 	github.com/labstack/echo/v4 v4.13.3
 	github.com/lib/pq v1.10.9

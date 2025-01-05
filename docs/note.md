@@ -143,3 +143,18 @@ curl -X GET  http://localhost:8080/healthcheck
 curl -X POST  http://localhost:8080/user -H "Content-Type: application/json" -d '{"Name": "user_x", "Email": "user_x@example.com", "Password": "password"}'
 curl -X GET  http://localhost:8080/user/1
 ```
+
+## mockの生成
+1. 準備
+
+```
+go get github.com/golang/mock/mockgen@v1.6.0
+go install github.com/golang/mock/mockgen@v1.6.0
+go mod tidy
+
+```
+
+2. mock生成
+```
+mockgen -source=user.go -destination=./mock/user_mock.go -package=repository
+```
