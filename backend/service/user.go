@@ -5,6 +5,7 @@ import (
 
 	"github.com/geek-teru/simple-task-app/ent"
 	"github.com/geek-teru/simple-task-app/repository"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserServiceInterface interface {
@@ -37,8 +38,14 @@ func NewUserService(repo repository.UserRepositoryInterface) UserServiceInterfac
 }
 
 func (u *UserService) CreateUser(userReq *UserRequest) (UserResponse, error) {
-	user := &ent.User{Name: userReq.Name, Email: userReq.Email, Password: userReq.Password}
-	createdUser, err := u.repo.CreateUser(context.Background(), user)
+	// passwordをbcryptで暗号化
+	hash, err := bcrypt.GenerateFromPassword([]byte(userReq.Password), 10)
+	if err != nil {
+		return UserResponse{}, err
+	}
+
+	passwordEncryptedUser := &ent.User{Name: userReq.Name, Email: userReq.Email, Password: string(hash)}
+	createdUser, err := u.repo.CreateUser(context.Background(), passwordEncryptedUser)
 	if err != nil {
 		return UserResponse{}, err
 	}
