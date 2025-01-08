@@ -28,7 +28,7 @@ func NewUserHandler(service service.UserServiceInterface, log *zap.Logger) *User
 
 func (h *UserHandler) Create(c echo.Context) error {
 	// requestのBind
-	UserReq := &service.UserRequest{}
+	UserReq := service.UserRequest{}
 	if err := c.Bind(UserReq); err != nil {
 		err = fmt.Errorf("failed handler.CreateUser: %v", err)
 		h.logger.Error("[ERROR] CreateUser", zap.Error(err))
@@ -82,7 +82,7 @@ func (h *UserHandler) Update(c echo.Context) error {
 	}
 
 	// requestのBind
-	UserReq := new(service.UserRequest)
+	UserReq := service.UserRequest{}
 	if err := c.Bind(UserReq); err != nil {
 		err = fmt.Errorf("failed handler.UpdateUser: %v", err)
 		h.logger.Error("[ERROR] UpdateUser", zap.Error(err))
