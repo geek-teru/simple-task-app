@@ -9,9 +9,9 @@ import (
 )
 
 type UserServiceInterface interface {
-	CreateUser(UserReq *UserRequest) (UserResponse, error)
+	CreateUser(UserReq UserRequest) (UserResponse, error)
 	GetUserById(id int) (UserResponse, error)
-	UpdateUser(UserReq *UserRequest, id int) (UserResponse, error)
+	UpdateUser(UserReq UserRequest, id int) (UserResponse, error)
 }
 
 type (
@@ -37,7 +37,7 @@ func NewUserService(repo repository.UserRepositoryInterface) UserServiceInterfac
 	}
 }
 
-func (u *UserService) CreateUser(userReq *UserRequest) (UserResponse, error) {
+func (u *UserService) CreateUser(userReq UserRequest) (UserResponse, error) {
 	// passwordをbcryptで暗号化
 	hash, err := bcrypt.GenerateFromPassword([]byte(userReq.Password), 10)
 	if err != nil {
@@ -72,7 +72,7 @@ func (u *UserService) GetUserById(id int) (UserResponse, error) {
 	return userRes, nil
 }
 
-func (u *UserService) UpdateUser(UserReq *UserRequest, id int) (UserResponse, error) {
+func (u *UserService) UpdateUser(UserReq UserRequest, id int) (UserResponse, error) {
 	user := &ent.User{Name: UserReq.Name, Email: UserReq.Email, Password: UserReq.Password}
 	updatedUser, err := u.repo.UpdateUser(context.Background(), user, id)
 	if err != nil {
