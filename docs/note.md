@@ -122,6 +122,26 @@ fixtures の投入処理では テーブルのデータが完全に入れ替え�
 
 シンプルで安全な設計を目指すなら、まずは 値渡し を基本とし、パフォーマンスや変更要件を理由に ポインタ渡し を採用するか検討するのが良い。
 
+## 遭遇したエラー
+* no new variables on left side of :=
+service/user.goのSignInメソッド内の `err = bcrypt.CompareHashAndPassword` を `err := bcrypt.CompareHashAndPassword` とするとエラーになる。
+`var1, err := ` のような形は `var1` の部分が変われば再び `err` を定義できる。
+```
+# これはOK
+var1, err := func1()
+var2, err := func2()
+
+# これもOK
+var1, err := func1()
+err = func2()
+
+# これはerror
+var1, err := func1()
+err := func2()
+```
+
+* json: Unmarshal(non-pointer service.UserRequest)
+handlerのBindメソッドへの引数が値渡しになっていたことが原因、インスタンス化してポインタ渡しにすることで解消
 
 ## よく使う手順メモ
 
@@ -182,9 +202,10 @@ docker exec -it postgres.local psql -U admin -d sampledb -c "\dt"
 2. SELECT
 ```
 docker exec -it postgres.local psql -U admin -d sampledb -c "select * from users;"
- id | name | email | password
-----+------+-------+----------
-(0 rows)
+  id   |  name  |       email        |                           password
+-------+--------+--------------------+--------------------------------------------------------------
+ 10001 | alice  | alice@example.com  | $2a$10$IUjSMm7z8i6QaF5BfOc7wOKRkQqdDZ4TkmzutyAOe42vwteaKiqsO
+ 10002 | bob    | bob@example.com    | $2a$10$ExzssGX4xS4joeZx7aO9SOpWXLBzhAQxjMBleRxf8ziC961FkJ7qq
 
 ```
 
@@ -203,7 +224,9 @@ go run main.go
 ## 動作確認用リクエスト
 ```
 curl -X GET  http://localhost:8080/healthcheck
-curl -X POST  http://localhost:8080/user -H "Content-Type: application/json" -d '{"Name": "user_x", "Email": "user_x@example.com", "Password": "password"}'
+curl -X POST  http://localhost:8080/user -H "Content-Type: applic 
+ation/json" -d '{"Name": "alice", "Email": "alice@example.com", "Pa 
+ssword": "alicepassword"}'
 curl -X GET  http://localhost:8080/user/1
 ```
 

@@ -122,3 +122,59 @@ func TestGetUserById(t *testing.T) {
 		}
 	}
 }
+
+func TestGetUserByEmail(t *testing.T) {
+
+	// fixturesの投入
+	loadFixture(t)
+
+	// テストケース
+	tests := []struct {
+		name    string
+		args    *ent.User
+		want    *ent.User
+		wanterr error
+	}{
+		{
+			// 正常系
+			name:    "case: Success",
+			args:    testdata.UserTestData[0],
+			want:    testdata.UserTestData[0],
+			wanterr: nil,
+		},
+		{
+			// 異常系: 存在しないデータ
+			name:    "case: Duplicate error",
+			args:    testdata.UserTestData[1],
+			want:    nil,
+			wanterr: fmt.Errorf("failed to get user by email (user_x@example.com) in repository: ent: user not found"),
+		},
+	}
+
+	repo := repository.NewUserRepository(testClient)
+
+	for _, tt := range tests {
+		fmt.Println(tt.name)
+
+		// test対象メソッドの実行
+		got, goterr := repo.GetUserByEmail(context.Background(), tt.args.Email)
+		// fmt.Println(got)
+
+		// 結果の比較
+		if tt.wanterr == nil && goterr == nil {
+			// 正常
+			if diff := cmp.Diff(got, tt.want, cmpopts.IgnoreUnexported(ent.User{})); diff != "" {
+				t.Errorf("[FAIL]return mismatch\n got = %v,\n want= %v\n", got, tt.want)
+			} else {
+				fmt.Println("OK")
+			}
+		} else {
+			// 異常
+			if goterr.Error() != tt.wanterr.Error() {
+				t.Errorf("[FAIL] return error mismatch\n goterr = %v,\n wanterr= %v\n", goterr, tt.wanterr)
+			} else {
+				fmt.Println("OK")
+			}
+		}
+	}
+}

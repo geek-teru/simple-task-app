@@ -2,16 +2,21 @@ package service
 
 import (
 	"context"
+	"fmt"
+	"os"
+	"time"
 
 	"github.com/geek-teru/simple-task-app/ent"
 	"github.com/geek-teru/simple-task-app/repository"
+	"github.com/golang-jwt/jwt/v4"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type UserServiceInterface interface {
-	CreateUser(UserReq UserRequest) (UserResponse, error)
-	GetUserById(id int) (UserResponse, error)
-	UpdateUser(UserReq UserRequest, id int) (UserResponse, error)
+	SignUp(UserReq *UserRequest) (UserResponse, error)
+	SignIn(UserReq *UserRequest) (string, error)
+	GetUserProfile(id int) (UserResponse, error)
+	UpdateUserProfile(UserReq *UserRequest, id int) (UserResponse, error)
 }
 
 type (
@@ -37,17 +42,17 @@ func NewUserService(repo repository.UserRepositoryInterface) UserServiceInterfac
 	}
 }
 
-func (u *UserService) CreateUser(userReq UserRequest) (UserResponse, error) {
+func (u *UserService) SignUp(userReq *UserRequest) (UserResponse, error) {
 	// passwordをbcryptで暗号化
 	hash, err := bcrypt.GenerateFromPassword([]byte(userReq.Password), 10)
 	if err != nil {
-		return UserResponse{}, err
+		return UserResponse{}, fmt.Errorf("failed to SignUp in service: %w", err)
 	}
 
 	passwordEncryptedUser := &ent.User{Name: userReq.Name, Email: userReq.Email, Password: string(hash)}
 	createdUser, err := u.repo.CreateUser(context.Background(), passwordEncryptedUser)
 	if err != nil {
-		return UserResponse{}, err
+		return UserResponse{}, fmt.Errorf("failed to SignUp in service: %w", err)
 	}
 
 	userRes := UserResponse{
@@ -58,25 +63,51 @@ func (u *UserService) CreateUser(userReq UserRequest) (UserResponse, error) {
 	return userRes, nil
 }
 
-func (u *UserService) GetUserById(id int) (UserResponse, error) {
-	gotUser, err := u.repo.GetUserById(context.Background(), id)
+func (u *UserService) SignIn(userReq *UserRequest) (string, error) {
+	storedUser, err := u.repo.GetUserByEmail(context.Background(), userReq.Email)
 	if err != nil {
-		return UserResponse{}, err
+		return "", fmt.Errorf("failed to SignIn in service: %w", err)
+	}
+
+	// パスワードの比較
+	err = bcrypt.CompareHashAndPassword([]byte(storedUser.Password), []byte(userReq.Password))
+	if err != nil {
+		return "", fmt.Errorf("failed to SignIn in service: %w", err)
+	}
+
+	// JWTトークンの生成
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"user_id": storedUser.ID,
+		"exp":     time.Now().Add(time.Hour * 12).Unix(),
+	})
+
+	tokenString, err := token.SignedString([]byte(os.Getenv("SECRET")))
+	if err != nil {
+		return "", fmt.Errorf("failed to SignIn in service: %w", err)
+	}
+
+	return tokenString, nil
+}
+
+func (u *UserService) GetUserProfile(id int) (UserResponse, error) {
+	storedUser, err := u.repo.GetUserById(context.Background(), id)
+	if err != nil {
+		return UserResponse{}, fmt.Errorf("failed to GetUserProfile in service: %w", err)
 	}
 
 	userRes := UserResponse{
-		ID:   int(gotUser.ID),
-		Name: gotUser.Name,
+		ID:   int(storedUser.ID),
+		Name: storedUser.Name,
 	}
 
 	return userRes, nil
 }
 
-func (u *UserService) UpdateUser(UserReq UserRequest, id int) (UserResponse, error) {
+func (u *UserService) UpdateUserProfile(UserReq *UserRequest, id int) (UserResponse, error) {
 	user := &ent.User{Name: UserReq.Name, Email: UserReq.Email, Password: UserReq.Password}
 	updatedUser, err := u.repo.UpdateUser(context.Background(), user, id)
 	if err != nil {
-		return UserResponse{}, err
+		return UserResponse{}, fmt.Errorf("failed to UpdateUserProfile in service: %w", err)
 	}
 
 	userRes := UserResponse{
