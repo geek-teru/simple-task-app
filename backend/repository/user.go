@@ -11,6 +11,7 @@ import (
 type UserRepositoryInterface interface {
 	CreateUser(ctx context.Context, user *ent.User) (*ent.User, error)
 	GetUserById(ctx context.Context, id int) (*ent.User, error)
+	GetUserByEmail(ctx context.Context, email string) (*ent.User, error)
 	UpdateUser(ctx context.Context, user *ent.User, id int) (*ent.User, error)
 }
 
@@ -42,6 +43,16 @@ func (r *userRepository) GetUserById(ctx context.Context, id int) (*ent.User, er
 		Only(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get user by id (%d) in repository: %w", id, err)
+	}
+	return gotUser, nil
+}
+
+func (r *userRepository) GetUserByEmail(ctx context.Context, email string) (*ent.User, error) {
+	gotUser, err := r.client.User.Query().
+		Where(user.EmailEQ(email)).
+		Only(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get user by email (%s) in repository: %w", email, err)
 	}
 	return gotUser, nil
 }

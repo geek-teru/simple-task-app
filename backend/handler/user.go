@@ -26,32 +26,32 @@ func NewUserHandler(service service.UserServiceInterface, log *zap.Logger) *User
 	}
 }
 
-func (h *UserHandler) Create(c echo.Context) error {
+func (h *UserHandler) SignUp(c echo.Context) error {
 	// requestのBind
-	UserReq := service.UserRequest{}
+	UserReq := &service.UserRequest{}
 	if err := c.Bind(UserReq); err != nil {
-		err = fmt.Errorf("failed handler.CreateUser: %v", err)
-		h.logger.Error("[ERROR] CreateUser", zap.Error(err))
+		err = fmt.Errorf("failed handler.SignUp: %v", err)
+		h.logger.Error("[ERROR] SignUp", zap.Error(err))
 		return c.JSON(http.StatusBadRequest, "Bad Request")
 	}
 
 	// Serviceの呼び出し
-	userRes, err := h.Service.CreateUser(UserReq)
+	userRes, err := h.Service.SignUp(UserReq)
 	if err != nil {
-		h.logger.Error("[ERROR] CreateUser", zap.Error(err))
+		h.logger.Error("[ERROR] SignUp", zap.Error(err))
 		return c.JSON(http.StatusInternalServerError, nil)
 	}
 
 	return c.JSON(http.StatusCreated, userRes)
 }
 
-func (h *UserHandler) GetById(c echo.Context) error {
+func (h *UserHandler) GetUserProfile(c echo.Context) error {
 	// パスパラメータからidを取得する
 	// TODO: クレームからidを取得するようにする
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		err = fmt.Errorf("failed handler.GetUser: %v", err)
-		h.logger.Error("[ERROR] GetUser", zap.Error(err))
+		err = fmt.Errorf("failed handler.GetUserProfile: %v", err)
+		h.logger.Error("[ERROR] GetUserProfile", zap.Error(err))
 		return c.JSON(http.StatusBadRequest, "Bad Request")
 	}
 
@@ -64,35 +64,35 @@ func (h *UserHandler) GetById(c echo.Context) error {
 	// }
 
 	// Serviceの呼び出し
-	UserRes, err := h.Service.GetUserById(id)
+	UserRes, err := h.Service.GetUserProfile(id)
 	if err != nil {
-		h.logger.Error("[ERROR] GetUser", zap.Error(err))
+		h.logger.Error("[ERROR] GetUserProfile", zap.Error(err))
 		return c.JSON(http.StatusNotFound, "Not Found")
 	}
 	return c.JSON(http.StatusOK, UserRes)
 }
 
-func (h *UserHandler) Update(c echo.Context) error {
+func (h *UserHandler) UpdateUserProfile(c echo.Context) error {
 	// パスパラメータからIDを取得する
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		err = fmt.Errorf("failed handler.UpdateUser: %v", err)
-		h.logger.Error("[ERROR] UpdateUser", zap.Error(err))
+		err = fmt.Errorf("failed handler.UpdateUserProfile: %v", err)
+		h.logger.Error("[ERROR] UpdateUserProfile", zap.Error(err))
 		return c.JSON(http.StatusBadRequest, "Bad Request")
 	}
 
 	// requestのBind
-	UserReq := service.UserRequest{}
+	UserReq := &service.UserRequest{}
 	if err := c.Bind(UserReq); err != nil {
-		err = fmt.Errorf("failed handler.UpdateUser: %v", err)
-		h.logger.Error("[ERROR] UpdateUser", zap.Error(err))
+		err = fmt.Errorf("failed handler.UpdateUserProfile: %v", err)
+		h.logger.Error("[ERROR] UpdateUserProfile", zap.Error(err))
 		return c.JSON(http.StatusBadRequest, "Bad Request")
 	}
 
 	// Serviceの呼び出し
-	userRes, err := h.Service.UpdateUser(UserReq, id)
+	userRes, err := h.Service.UpdateUserProfile(UserReq, id)
 	if err != nil {
-		h.logger.Error("[ERROR] UpdateUser", zap.Error(err))
+		h.logger.Error("[ERROR] UpdateUserProfile", zap.Error(err))
 		return c.JSON(http.StatusNotFound, "Not Found")
 	}
 
