@@ -44,7 +44,8 @@ func TestCreateUser(t *testing.T) {
 
 	for _, tt := range tests {
 		fmt.Println(tt.name)
-		//fmt.Println(tt.args) //debug
+		fmt.Println(tt.args) //debug
+		fmt.Println(repo)
 		got, goterr := repo.CreateUser(context.Background(), tt.args)
 		//fmt.Println(goterr)
 

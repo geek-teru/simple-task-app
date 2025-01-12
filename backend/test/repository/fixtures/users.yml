@@ -1,16 +1,9 @@
 - id: 1
-  name: "user_a"
-  email: "user_a@example.com"
-  password: "passworda"
+  name: "alice"
+  email: "alice@example.com"
+  password: "$2a$10$IUjSMm7z8i6QaF5BfOc7wOKRkQqdDZ4TkmzutyAOe42vwteaKiqsO"
 - id: 2
-  name: "user_b"
-  email: "user_b@example.com"
-  password: "passwordb"
-- id: 3
-  name: "user_c"
-  email: "user_c@example.com"
-  password: "passwordc"
-- id: 4
-  name: "user_d"
-  email: "user_d@example.com"
-  password: "passwordd"
+  name: "bob"
+  email: "bob@example.com"
+  password: "$2a$10$ExzssGX4xS4joeZx7aO9SOpWXLBzhAQxjMBleRxf8ziC961FkJ7qq"
+
