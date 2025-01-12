@@ -88,7 +88,7 @@ func TestGetUserById(t *testing.T) {
 		},
 		{
 			// 異常系: 存在しないデータ
-			name:    "case: Duplicate error",
+			name:    "case: Not exist error",
 			args:    testdata.UserTestData[1],
 			want:    nil,
 			wanterr: fmt.Errorf("failed to get user by id (10001) in repository: ent: user not found"),
@@ -144,10 +144,10 @@ func TestGetUserByEmail(t *testing.T) {
 		},
 		{
 			// 異常系: 存在しないデータ
-			name:    "case: Duplicate error",
+			name:    "case: Not exist error",
 			args:    testdata.UserTestData[1],
 			want:    nil,
-			wanterr: fmt.Errorf("failed to get user by email (user_x@example.com) in repository: ent: user not found"),
+			wanterr: fmt.Errorf("failed to get user by email (bob@example.com) in repository: ent: user not found"),
 		},
 	}
 
