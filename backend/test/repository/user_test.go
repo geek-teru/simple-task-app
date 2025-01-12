@@ -56,6 +56,9 @@ func TestCreateUser(t *testing.T) {
 			} else {
 				fmt.Println("OK")
 			}
+		} else if tt.wanterr == nil || goterr == nil {
+			// 期待値と結果のどちらか片方がnil
+			t.Errorf("[FAIL] return error mismatch\n goterr = %v,\n wanterr= %v\n", goterr, tt.wanterr)
 		} else {
 			// 異常
 			if goterr.Error() != tt.wanterr.Error() {
@@ -112,6 +115,9 @@ func TestGetUserById(t *testing.T) {
 			} else {
 				fmt.Println("OK")
 			}
+		} else if tt.wanterr == nil || goterr == nil {
+			// 期待値と結果のどちらか片方がnil
+			t.Errorf("[FAIL] return error mismatch\n goterr = %v,\n wanterr= %v\n", goterr, tt.wanterr)
 		} else {
 			// 異常
 			if goterr.Error() != tt.wanterr.Error() {
@@ -168,6 +174,9 @@ func TestGetUserByEmail(t *testing.T) {
 			} else {
 				fmt.Println("OK")
 			}
+		} else if tt.wanterr == nil || goterr == nil {
+			// 期待値と結果のどちらか片方がnil
+			t.Errorf("[FAIL] return error mismatch\n goterr = %v,\n wanterr= %v\n", goterr, tt.wanterr)
 		} else {
 			// 異常
 			if goterr.Error() != tt.wanterr.Error() {
