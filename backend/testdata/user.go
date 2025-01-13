@@ -27,24 +27,24 @@ var UserTestData = []*ent.User{
 	},
 }
 
-var UserReqTestData = []service.UserRequest{
-	service.UserRequest{
+var UserReqTestData = []*service.UserRequest{
+	&service.UserRequest{
 		// 登録済み
-		Name: "user_a", Email: "user_a@example.com", Password: "passworda",
+		Name: "alice", Email: "alice@example.com", Password: "alicepassword",
 	},
-	service.UserRequest{
+	&service.UserRequest{
 		// 未登録
-		Name: "user_x", Email: "user_x@example.com", Password: "passwordx",
+		Name: "bob", Email: "bob@example.com", Password: "bobpassword",
 	},
 }
 
 var UserResTestData = []service.UserResponse{
 	service.UserResponse{
 		// 登録済み
-		ID: 1, Name: "user_a",
+		ID: 1, Name: "alice",
 	},
 	service.UserResponse{
 		// 未登録
-		ID: 10001, Name: "user_x",
+		ID: 10001, Name: "bob",
 	},
 }
