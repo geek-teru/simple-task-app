@@ -69,13 +69,12 @@ func (u *UserService) SignIn(userReq *UserRequest) (string, error) {
 		return "", fmt.Errorf("failed to SignIn in service: %w", err)
 	}
 
-	// パスワードの比較
 	err = bcrypt.CompareHashAndPassword([]byte(storedUser.Password), []byte(userReq.Password))
 	if err != nil {
 		return "", fmt.Errorf("failed to SignIn in service: %w", err)
 	}
 
-	// JWTトークンの生成
+	// // JWTトークンの生成
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user_id": storedUser.ID,
 		"exp":     time.Now().Add(time.Hour * 12).Unix(),
