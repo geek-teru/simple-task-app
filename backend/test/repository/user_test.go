@@ -36,7 +36,7 @@ func TestCreateUser(t *testing.T) {
 			name:    "case: Duplicate error",
 			args:    testdata.UserTestData[0],
 			want:    nil,
-			wanterr: fmt.Errorf("failed to create user in repository: ent: constraint failed: pq: duplicate key value violates unique constraint \"users_email_key\""),
+			wanterr: fmt.Errorf("[ERROR] failed to create user in repository: ent: constraint failed: pq: duplicate key value violates unique constraint \"users_email_key\""),
 		},
 	}
 
@@ -52,7 +52,7 @@ func TestCreateUser(t *testing.T) {
 		if tt.wanterr == nil && goterr == nil {
 			// 正常
 			if diff := cmp.Diff(got, tt.want, cmpopts.IgnoreUnexported(ent.User{})); diff != "" {
-				t.Errorf("[FAIL]return mismatch\n got = %v,\n want= %v\n", got, tt.want)
+				t.Errorf("[FAIL] return mismatch\n got = %v,\n want= %v\n", got, tt.want)
 			} else {
 				fmt.Println("OK")
 			}
@@ -94,7 +94,7 @@ func TestGetUserById(t *testing.T) {
 			name:    "case: Not exist error",
 			args:    testdata.UserTestData[1],
 			want:    nil,
-			wanterr: fmt.Errorf("failed to get user by id (10001) in repository: ent: user not found"),
+			wanterr: fmt.Errorf("[ERROR] failed to get user by id (10001) in repository: ent: user not found"),
 		},
 	}
 
@@ -111,7 +111,7 @@ func TestGetUserById(t *testing.T) {
 		if tt.wanterr == nil && goterr == nil {
 			// 正常
 			if diff := cmp.Diff(got, tt.want, cmpopts.IgnoreUnexported(ent.User{})); diff != "" {
-				t.Errorf("[FAIL]return mismatch\n got = %v,\n want= %v\n", got, tt.want)
+				t.Errorf("[FAIL] return mismatch\n got = %v,\n want= %v\n", got, tt.want)
 			} else {
 				fmt.Println("OK")
 			}
@@ -153,7 +153,7 @@ func TestGetUserByEmail(t *testing.T) {
 			name:    "case: Not exist error",
 			args:    testdata.UserTestData[1],
 			want:    nil,
-			wanterr: fmt.Errorf("failed to get user by email (bob@example.com) in repository: ent: user not found"),
+			wanterr: fmt.Errorf("[ERROR] failed to get user by email (bob@example.com) in repository: ent: user not found"),
 		},
 	}
 
@@ -170,7 +170,7 @@ func TestGetUserByEmail(t *testing.T) {
 		if tt.wanterr == nil && goterr == nil {
 			// 正常
 			if diff := cmp.Diff(got, tt.want, cmpopts.IgnoreUnexported(ent.User{})); diff != "" {
-				t.Errorf("[FAIL]return mismatch\n got = %v,\n want= %v\n", got, tt.want)
+				t.Errorf("[FAIL] return mismatch\n got = %v,\n want= %v\n", got, tt.want)
 			} else {
 				fmt.Println("OK")
 			}

@@ -18,17 +18,30 @@ func TestSignUp(t *testing.T) {
 
 	// テストケース
 	tests := []struct {
-		name    string
-		args    *service.UserRequest
-		want    service.UserResponse
-		wanterr error
+		name       string
+		args       *service.UserRequest
+		mockreturn *ent.User
+		mockerr    error
+		want       service.UserResponse
+		wanterr    error
 	}{
 		{
 			// 正常系
-			name:    "case: Success",
-			args:    testdata.UserReqTestData[1],
-			want:    testdata.UserResTestData[1],
-			wanterr: nil,
+			name:       "case: Success",
+			args:       testdata.UserReqTestData[1],
+			mockreturn: testdata.UserTestData[1],
+			mockerr:    nil,
+			want:       testdata.UserResTestData[1],
+			wanterr:    nil,
+		},
+		{
+			// 異常系: データ重複
+			name:       "case: Duplicate error",
+			args:       testdata.UserReqTestData[0],
+			mockreturn: nil,
+			mockerr:    fmt.Errorf("[ERROR] failed to create user in repository: ent: constraint failed: pq: duplicate key value violates unique constraint \"users_email_key\""),
+			want:       service.UserResponse{},
+			wanterr:    fmt.Errorf("[ERROR] failed to create user in repository: ent: constraint failed: pq: duplicate key value violates unique constraint \"users_email_key\""),
 		},
 	}
 
@@ -40,14 +53,14 @@ func TestSignUp(t *testing.T) {
 	for _, tt := range tests {
 		fmt.Println(tt.name)
 		//fmt.Println(tt.args) //debug
-		userRepo.EXPECT().CreateUser(context.Background(), gomock.Any()).Return(testdata.UserTestData[1], nil)
+		userRepo.EXPECT().CreateUser(context.Background(), gomock.Any()).Return(tt.mockreturn, tt.mockerr)
 
 		got, goterr := userService.SignUp(tt.args)
 		// 結果の比較
 		if tt.wanterr == nil && goterr == nil {
 			// 正常
 			if diff := cmp.Diff(got, tt.want, cmpopts.IgnoreUnexported(ent.User{})); diff != "" {
-				t.Errorf("[FAIL]return mismatch\n got = %v,\n want= %v\n", got, tt.want)
+				t.Errorf("[FAIL] return mismatch\n got = %v,\n want= %v\n", got, tt.want)
 			} else {
 				fmt.Println("OK")
 			}
@@ -69,17 +82,39 @@ func TestSignIn(t *testing.T) {
 
 	// テストケース
 	tests := []struct {
-		name    string
-		args    *service.UserRequest
-		want    string
-		wanterr error
+		name       string
+		args       *service.UserRequest
+		mockreturn *ent.User
+		mockerr    error
+		want       string
+		wanterr    error
 	}{
 		{
 			// 正常系
-			name:    "case: Success",
-			args:    testdata.UserReqTestData[1],
-			want:    "alicepassword",
-			wanterr: nil,
+			name:       "case: Success",
+			args:       testdata.UserReqTestData[0],
+			mockreturn: testdata.UserTestData[0],
+			mockerr:    nil,
+			want:       "jwt",
+			wanterr:    nil,
+		},
+		{
+			// 異常系: 未登録
+			name:       "case: Not exist error",
+			args:       testdata.UserReqTestData[1],
+			mockreturn: nil,
+			mockerr:    fmt.Errorf("[ERROR] failed to get user by id (10001) in repository: ent: user not found"),
+			want:       "",
+			wanterr:    fmt.Errorf("[ERROR] failed to get user by id (10001) in repository: ent: user not found"),
+		},
+		{
+			// 異常系: password間違い
+			name:       "case: Unauthorized error",
+			args:       testdata.UserReqTestData[2],
+			mockreturn: testdata.UserTestData[0],
+			mockerr:    nil,
+			want:       "",
+			wanterr:    fmt.Errorf("[ERROR] failed to SignIn in service: crypto/bcrypt: hashedPassword is not the hash of the given password"),
 		},
 	}
 
@@ -91,13 +126,13 @@ func TestSignIn(t *testing.T) {
 	for _, tt := range tests {
 		fmt.Println(tt.name)
 		//fmt.Println(tt.args) //debug
-		userRepo.EXPECT().GetUserByEmail(context.Background(), tt.args.Email).Return(testdata.UserTestData[1], nil)
+		userRepo.EXPECT().GetUserByEmail(context.Background(), tt.args.Email).Return(tt.mockreturn, tt.mockerr)
 		got, goterr := userService.SignIn(tt.args)
 		// 結果の比較
 		if tt.wanterr == nil && goterr == nil {
 			// 正常
 			if diff := cmp.Diff(got, tt.want, cmpopts.IgnoreUnexported(ent.User{})); diff != "" {
-				t.Errorf("[FAIL]return mismatch\n got = %v,\n want= %v\n", got, tt.want)
+				t.Errorf("[FAIL] return mismatch\n got = %v,\n want= %v\n", got, tt.want)
 			} else {
 				fmt.Println("OK")
 			}
@@ -148,7 +183,7 @@ func TestGetUserProfile(t *testing.T) {
 		if tt.wanterr == nil && goterr == nil {
 			// 正常
 			if diff := cmp.Diff(got, tt.want, cmpopts.IgnoreUnexported(ent.User{})); diff != "" {
-				t.Errorf("[FAIL]return mismatch\n got = %v,\n want= %v\n", got, tt.want)
+				t.Errorf("[FAIL] return mismatch\n got = %v,\n want= %v\n", got, tt.want)
 			} else {
 				fmt.Println("OK")
 			}

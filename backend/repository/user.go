@@ -32,7 +32,7 @@ func (r *userRepository) CreateUser(ctx context.Context, user *ent.User) (*ent.U
 		SetPassword(user.Password).
 		Save(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create user in repository: %w", err)
+		return nil, fmt.Errorf("[ERROR] failed to create user in repository: %w", err)
 	}
 	return createdUser, nil
 }
@@ -42,7 +42,7 @@ func (r *userRepository) GetUserById(ctx context.Context, id int) (*ent.User, er
 		Where(user.IDEQ(id)).
 		Only(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get user by id (%d) in repository: %w", id, err)
+		return nil, fmt.Errorf("[ERROR] failed to get user by id (%d) in repository: %w", id, err)
 	}
 	return gotUser, nil
 }
@@ -52,7 +52,7 @@ func (r *userRepository) GetUserByEmail(ctx context.Context, email string) (*ent
 		Where(user.EmailEQ(email)).
 		Only(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get user by email (%s) in repository: %w", email, err)
+		return nil, fmt.Errorf("[ERROR] failed to get user by email (%s) in repository: %w", email, err)
 	}
 	return gotUser, nil
 }
@@ -64,7 +64,7 @@ func (r *userRepository) UpdateUser(ctx context.Context, user *ent.User, id int)
 		SetPassword(user.Password).
 		Save(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to update user in repository: %w", err)
+		return nil, fmt.Errorf("[ERROR] failed to update user in repository: %w", err)
 	}
 	return updatedUser, nil
 }

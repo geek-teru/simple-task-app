@@ -46,13 +46,13 @@ func (u *UserService) SignUp(userReq *UserRequest) (UserResponse, error) {
 	// passwordをbcryptで暗号化
 	hash, err := bcrypt.GenerateFromPassword([]byte(userReq.Password), 10)
 	if err != nil {
-		return UserResponse{}, fmt.Errorf("failed to SignUp in service: %w", err)
+		return UserResponse{}, fmt.Errorf("[ERROR] failed to SignUp in service: %w", err)
 	}
 
 	passwordEncryptedUser := &ent.User{Name: userReq.Name, Email: userReq.Email, Password: string(hash)}
 	createdUser, err := u.repo.CreateUser(context.Background(), passwordEncryptedUser)
 	if err != nil {
-		return UserResponse{}, fmt.Errorf("failed to SignUp in service: %w", err)
+		return UserResponse{}, fmt.Errorf("%w", err)
 	}
 
 	userRes := UserResponse{
@@ -66,12 +66,12 @@ func (u *UserService) SignUp(userReq *UserRequest) (UserResponse, error) {
 func (u *UserService) SignIn(userReq *UserRequest) (string, error) {
 	storedUser, err := u.repo.GetUserByEmail(context.Background(), userReq.Email)
 	if err != nil {
-		return "", fmt.Errorf("failed to SignIn in service: %w", err)
+		return "", fmt.Errorf("%w", err)
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(storedUser.Password), []byte(userReq.Password))
 	if err != nil {
-		return "", fmt.Errorf("failed to SignIn in service: %w", err)
+		return "", fmt.Errorf("[ERROR] failed to SignIn in service: %w", err)
 	}
 
 	// // JWTトークンの生成
@@ -82,7 +82,7 @@ func (u *UserService) SignIn(userReq *UserRequest) (string, error) {
 
 	tokenString, err := token.SignedString([]byte(os.Getenv("SECRET")))
 	if err != nil {
-		return "", fmt.Errorf("failed to SignIn in service: %w", err)
+		return "", fmt.Errorf("[ERROR] failed to SignIn in service: %w", err)
 	}
 
 	return tokenString, nil
@@ -91,7 +91,7 @@ func (u *UserService) SignIn(userReq *UserRequest) (string, error) {
 func (u *UserService) GetUserProfile(id int) (UserResponse, error) {
 	storedUser, err := u.repo.GetUserById(context.Background(), id)
 	if err != nil {
-		return UserResponse{}, fmt.Errorf("failed to GetUserProfile in service: %w", err)
+		return UserResponse{}, fmt.Errorf("%w", err)
 	}
 
 	userRes := UserResponse{
@@ -106,7 +106,7 @@ func (u *UserService) UpdateUserProfile(UserReq *UserRequest, id int) (UserRespo
 	user := &ent.User{Name: UserReq.Name, Email: UserReq.Email, Password: UserReq.Password}
 	updatedUser, err := u.repo.UpdateUser(context.Background(), user, id)
 	if err != nil {
-		return UserResponse{}, fmt.Errorf("failed to UpdateUserProfile in service: %w", err)
+		return UserResponse{}, fmt.Errorf("%w", err)
 	}
 
 	userRes := UserResponse{
