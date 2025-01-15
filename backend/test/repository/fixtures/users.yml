@@ -2,3 +2,7 @@
   name: "alice"
   email: "alice@example.com"
   password: "$2a$10$IUjSMm7z8i6QaF5BfOc7wOKRkQqdDZ4TkmzutyAOe42vwteaKiqsO"
+- id: 2
+  name: "carol"
+  email: "carol@example.com"
+  password: "xxxxxx"

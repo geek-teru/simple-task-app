@@ -14,6 +14,14 @@ var UserTestData = []*ent.User{
 		// 未登録
 		ID: 10001, Name: "bob", Email: "bob@example.com", Password: "$2a$10$ExzssGX4xS4joeZx7aO9SOpWXLBzhAQxjMBleRxf8ziC961FkJ7qq",
 	},
+	&ent.User{
+		// 更新用
+		ID: 1, Name: "alice", Email: "alice@example.co.jp", Password: "$2a$10$IUjSMm7z8i6QaF5BfOc7wOKRkQqdDZ4TkmzutyAOe42vwteaKiqsO",
+	},
+	&ent.User{
+		// 更新用(一意制約違反)
+		ID: 1, Name: "alice", Email: "carol@example.com", Password: "$2a$10$IUjSMm7z8i6QaF5BfOc7wOKRkQqdDZ4TkmzutyAOe42vwteaKiqsO",
+	},
 }
 
 var UserReqTestData = []*service.UserRequest{

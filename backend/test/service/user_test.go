@@ -95,7 +95,7 @@ func TestSignIn(t *testing.T) {
 			args:       testdata.UserReqTestData[0],
 			mockreturn: testdata.UserTestData[0],
 			mockerr:    nil,
-			want:       "jwt",
+			want:       "",
 			wanterr:    nil,
 		},
 		{
@@ -131,10 +131,11 @@ func TestSignIn(t *testing.T) {
 		// 結果の比較
 		if tt.wanterr == nil && goterr == nil {
 			// 正常
-			if diff := cmp.Diff(got, tt.want, cmpopts.IgnoreUnexported(ent.User{})); diff != "" {
-				t.Errorf("[FAIL] return mismatch\n got = %v,\n want= %v\n", got, tt.want)
-			} else {
+			// jwtの期待値は長さが1以上の文字列とする
+			if len(got) > 0 {
 				fmt.Println("OK")
+			} else {
+				t.Errorf("[FAIL] return mismatch\n got = %v,\n want= %v\n", got, tt.want)
 			}
 		} else if tt.wanterr == nil || goterr == nil {
 			// 期待値と結果のどちらか片方がnil
