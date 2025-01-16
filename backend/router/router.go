@@ -12,8 +12,11 @@ func NewRouter(e *echo.Echo, userHandler handler.UserHandler) {
 	e.Use(echomiddleware.Recover())
 	e.GET("/healthcheck", handler.Healthcheck)
 
-	e.GET("user/:id", userHandler.GetUserProfile)
-	e.POST("/user", userHandler.SignUp)
-	e.PUT("user/:id", userHandler.UpdateUserProfile)
+	e.POST("/signup", userHandler.SignUp)
+	e.POST("/signin", userHandler.SignUp)
+
+	u := e.Group("user/")
+	u.GET("user/", userHandler.GetUserProfile)
+	u.PUT("user/", userHandler.UpdateUserProfile)
 
 }
