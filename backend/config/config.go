@@ -7,7 +7,7 @@ import (
 type Config struct {
 	Env      string `env:"ENV"     envDefault:"dev"`
 	Port     string `env:"PORT"     envDefault:"8080"`
-	LogLevel string `env:"LOG_LEVEL" envDefault:"InfoLevel"`
+	LogLevel string `env:"LOG_LEVEL" envDefault:"info"`
 }
 
 type DBConfig struct {

@@ -185,7 +185,7 @@ docker-compose down --rmi all --volumes --remove-orphans
 ## マイグレーション
 ```
 go mod tidy
-go run cmd/migrate.go
+go run cmd/main.go migrate
 ```
 
 ## テーブル確認
