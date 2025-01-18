@@ -3,8 +3,8 @@ package handler
 import (
 	"fmt"
 	"net/http"
-	"strconv"
 
+	jwt "github.com/golang-jwt/jwt"
 	echo "github.com/labstack/echo/v4"
 	zap "go.uber.org/zap"
 
@@ -45,26 +45,49 @@ func (h *UserHandler) SignUp(c echo.Context) error {
 	return c.JSON(http.StatusCreated, userRes)
 }
 
-func (h *UserHandler) GetUserProfile(c echo.Context) error {
-	// パスパラメータからidを取得する
-	// TODO: クレームからidを取得するようにする
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		err = fmt.Errorf("failed handler.GetUserProfile: %v", err)
-		h.logger.Error("[ERROR] GetUserProfile", zap.Error(err))
+func (h *UserHandler) SignIn(c echo.Context) error {
+	// requestのBind
+	UserReq := &service.UserRequest{}
+	if err := c.Bind(UserReq); err != nil {
+		err = fmt.Errorf("failed handler.SignIn: %v", err)
+		h.logger.Error("[ERROR] SignUp", zap.Error(err))
 		return c.JSON(http.StatusBadRequest, "Bad Request")
 	}
 
-	// JWTのクレームからidを取得
-	// id, err := jwtutil.GetClaim(c, "id")
-	// if err != nil {
-	// 	err = fmt.Errorf("failed handler.GetUser: %v, code: %w", err, apperror.ErrInvalidParams)
-	// 	h.logger.Error("[ERROR] GetUser", zap.Error(err))
-	// 	return c.JSON(http.StatusBadRequest, "Bad Request")
-	// }
+	// Serviceの呼び出し
+	tokenString, err := h.Service.SignIn(UserReq)
+	if err != nil {
+		h.logger.Error("[ERROR] SignIn", zap.Error(err))
+		return c.JSON(http.StatusInternalServerError, nil)
+	}
+
+	return c.JSON(http.StatusCreated, tokenString)
+}
+
+func (h *UserHandler) GetUserProfile(c echo.Context) error {
+	// クレームからidを取得
+	user, ok := c.Get("user").(*jwt.Token)
+	if !ok {
+		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "invalid token"})
+	}
+
+	claims, ok := user.Claims.(jwt.MapClaims)
+	if !ok {
+		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "invalid claims"})
+	}
+
+	userIdRaw, exists := claims["user_id"]
+	if !exists {
+		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "user_id not found"})
+	}
+
+	userId, ok := userIdRaw.(int)
+	if !ok {
+		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "user_id must be a int"})
+	}
 
 	// Serviceの呼び出し
-	UserRes, err := h.Service.GetUserProfile(id)
+	UserRes, err := h.Service.GetUserProfile(userId)
 	if err != nil {
 		h.logger.Error("[ERROR] GetUserProfile", zap.Error(err))
 		return c.JSON(http.StatusNotFound, "Not Found")
@@ -73,12 +96,25 @@ func (h *UserHandler) GetUserProfile(c echo.Context) error {
 }
 
 func (h *UserHandler) UpdateUserProfile(c echo.Context) error {
-	// パスパラメータからIDを取得する
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		err = fmt.Errorf("failed handler.UpdateUserProfile: %v", err)
-		h.logger.Error("[ERROR] UpdateUserProfile", zap.Error(err))
-		return c.JSON(http.StatusBadRequest, "Bad Request")
+	// クレームからidを取得
+	user, ok := c.Get("user").(*jwt.Token)
+	if !ok {
+		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "invalid token"})
+	}
+
+	claims, ok := user.Claims.(jwt.MapClaims)
+	if !ok {
+		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "invalid claims"})
+	}
+
+	userIdRaw, exists := claims["user_id"]
+	if !exists {
+		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "user_id not found"})
+	}
+
+	userId, ok := userIdRaw.(int)
+	if !ok {
+		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "user_id must be a int"})
 	}
 
 	// requestのBind
@@ -90,7 +126,7 @@ func (h *UserHandler) UpdateUserProfile(c echo.Context) error {
 	}
 
 	// Serviceの呼び出し
-	userRes, err := h.Service.UpdateUserProfile(UserReq, id)
+	userRes, err := h.Service.UpdateUserProfile(UserReq, userId)
 	if err != nil {
 		h.logger.Error("[ERROR] UpdateUserProfile", zap.Error(err))
 		return c.JSON(http.StatusNotFound, "Not Found")
