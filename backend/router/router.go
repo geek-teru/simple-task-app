@@ -19,11 +19,15 @@ func NewRouter(e *echo.Echo, userHandler handler.UserHandler) {
 	e.POST("/signin", userHandler.SignIn)
 
 	u := e.Group("/user")
-	u.Use(echojwt.WithConfig(echojwt.Config{
-		SigningKey:  []byte(os.Getenv("SECRET")),
-		TokenLookup: "header:Authorization:Bearer ",
-	}))
+	u.Use(JwtAuth())
 	u.GET("", userHandler.GetUserProfile)
 	u.PUT("", userHandler.UpdateUserProfile)
 
+}
+
+func JwtAuth() echo.MiddlewareFunc {
+	return echojwt.WithConfig(echojwt.Config{
+		SigningKey:  []byte(os.Getenv("SECRET")),
+		TokenLookup: "header:Authorization:Bearer ",
+	})
 }
