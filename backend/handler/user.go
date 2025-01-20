@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 
-	jwt "github.com/golang-jwt/jwt"
+	jwt "github.com/golang-jwt/jwt/v5"
 	echo "github.com/labstack/echo/v4"
 	zap "go.uber.org/zap"
 
@@ -61,33 +61,24 @@ func (h *UserHandler) SignIn(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, nil)
 	}
 
+	h.logger.Info("[INFO] SignIn", zap.String("token", tokenString))
+
 	return c.JSON(http.StatusCreated, tokenString)
 }
 
 func (h *UserHandler) GetUserProfile(c echo.Context) error {
 	// クレームからidを取得
-	user, ok := c.Get("user").(*jwt.Token)
-	if !ok {
-		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "invalid token"})
-	}
+	user := c.Get("user").(*jwt.Token)
+	h.logger.Debug("[Debug] token ", zap.Any("user", user))
 
-	claims, ok := user.Claims.(jwt.MapClaims)
-	if !ok {
-		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "invalid claims"})
-	}
+	claims := user.Claims.(jwt.MapClaims)
+	h.logger.Debug("[Debug] claims ", zap.Any("claims", claims))
 
-	userIdRaw, exists := claims["user_id"]
-	if !exists {
-		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "user_id not found"})
-	}
-
-	userId, ok := userIdRaw.(int)
-	if !ok {
-		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "user_id must be a int"})
-	}
+	userId := claims["user_id"]
+	h.logger.Debug("[Debug] claims ", zap.Any("userId", userId))
 
 	// Serviceの呼び出し
-	UserRes, err := h.Service.GetUserProfile(userId)
+	UserRes, err := h.Service.GetUserProfile(int(userId.(float64)))
 	if err != nil {
 		h.logger.Error("[ERROR] GetUserProfile", zap.Error(err))
 		return c.JSON(http.StatusNotFound, "Not Found")
