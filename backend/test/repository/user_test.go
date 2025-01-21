@@ -51,7 +51,7 @@ func TestCreateUser(t *testing.T) {
 		// 結果の比較
 		if tt.wanterr == nil && goterr == nil {
 			// 正常
-			if diff := cmp.Diff(got, tt.want, cmpopts.IgnoreUnexported(ent.User{})); diff != "" {
+			if diff := cmp.Diff(got, tt.want, cmpopts.IgnoreUnexported(ent.User{}, ent.UserEdges{})); diff != "" {
 				t.Errorf("[FAIL] return mismatch\n got = %v,\n want= %v\n", got, tt.want)
 			} else {
 				fmt.Println("OK")
@@ -110,7 +110,7 @@ func TestGetUserById(t *testing.T) {
 		// 結果の比較
 		if tt.wanterr == nil && goterr == nil {
 			// 正常
-			if diff := cmp.Diff(got, tt.want, cmpopts.IgnoreUnexported(ent.User{})); diff != "" {
+			if diff := cmp.Diff(got, tt.want, cmpopts.IgnoreUnexported(ent.User{}, ent.UserEdges{})); diff != "" {
 				t.Errorf("[FAIL] return mismatch\n got = %v,\n want= %v\n", got, tt.want)
 			} else {
 				fmt.Println("OK")
@@ -169,7 +169,7 @@ func TestGetUserByEmail(t *testing.T) {
 		// 結果の比較
 		if tt.wanterr == nil && goterr == nil {
 			// 正常
-			if diff := cmp.Diff(got, tt.want, cmpopts.IgnoreUnexported(ent.User{})); diff != "" {
+			if diff := cmp.Diff(got, tt.want, cmpopts.IgnoreUnexported(ent.User{}, ent.UserEdges{})); diff != "" {
 				t.Errorf("[FAIL] return mismatch\n got = %v,\n want= %v\n", got, tt.want)
 			} else {
 				fmt.Println("OK")
@@ -217,6 +217,14 @@ func TestUpdateUser(t *testing.T) {
 			want:    nil,
 			wanterr: fmt.Errorf("[ERROR] failed to update user in repository: ent: constraint failed: pq: duplicate key value violates unique constraint \"users_email_key\""),
 		},
+		{
+			// 正常系
+			name:    "case: Success",
+			args:    testdata.UserTestData[4],
+			argsId:  testdata.UserTestData[4].ID,
+			want:    testdata.UserTestData[4],
+			wanterr: nil,
+		},
 	}
 
 	repo := repository.NewUserRepository(testClient)
@@ -230,7 +238,7 @@ func TestUpdateUser(t *testing.T) {
 		// 結果の比較
 		if tt.wanterr == nil && goterr == nil {
 			// 正常
-			if diff := cmp.Diff(got, tt.want, cmpopts.IgnoreUnexported(ent.User{})); diff != "" {
+			if diff := cmp.Diff(got, tt.want, cmpopts.IgnoreUnexported(ent.User{}, ent.UserEdges{})); diff != "" {
 				t.Errorf("[FAIL] return mismatch\n got = %v,\n want= %v\n", got, tt.want)
 			} else {
 				fmt.Println("OK")
