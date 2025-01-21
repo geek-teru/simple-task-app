@@ -88,25 +88,14 @@ func (h *UserHandler) GetUserProfile(c echo.Context) error {
 
 func (h *UserHandler) UpdateUserProfile(c echo.Context) error {
 	// クレームからidを取得
-	user, ok := c.Get("user").(*jwt.Token)
-	if !ok {
-		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "invalid token"})
-	}
+	user := c.Get("user").(*jwt.Token)
+	h.logger.Debug("[Debug] token ", zap.Any("user", user))
 
-	claims, ok := user.Claims.(jwt.MapClaims)
-	if !ok {
-		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "invalid claims"})
-	}
+	claims := user.Claims.(jwt.MapClaims)
+	h.logger.Debug("[Debug] claims ", zap.Any("claims", claims))
 
-	userIdRaw, exists := claims["user_id"]
-	if !exists {
-		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "user_id not found"})
-	}
-
-	userId, ok := userIdRaw.(int)
-	if !ok {
-		return c.JSON(http.StatusUnauthorized, map[string]string{"error": "user_id must be a int"})
-	}
+	userId := claims["user_id"]
+	h.logger.Debug("[Debug] claims ", zap.Any("userId", userId))
 
 	// requestのBind
 	UserReq := &service.UserRequest{}
@@ -117,7 +106,7 @@ func (h *UserHandler) UpdateUserProfile(c echo.Context) error {
 	}
 
 	// Serviceの呼び出し
-	userRes, err := h.Service.UpdateUserProfile(UserReq, userId)
+	userRes, err := h.Service.UpdateUserProfile(UserReq, int(userId.(float64)))
 	if err != nil {
 		h.logger.Error("[ERROR] UpdateUserProfile", zap.Error(err))
 		return c.JSON(http.StatusNotFound, "Not Found")
