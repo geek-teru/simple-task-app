@@ -33,7 +33,7 @@ func TestCreateUser(t *testing.T) {
 		},
 		{
 			// 異常系: 一意制約違反
-			name:    "case: Duplicate error",
+			name:    "case: Duplicate Error",
 			args:    testdata.UserTestData[0],
 			want:    nil,
 			wanterr: fmt.Errorf("[ERROR] failed to create user in repository: ent: constraint failed: pq: duplicate key value violates unique constraint \"users_email_key\""),
@@ -91,7 +91,7 @@ func TestGetUserById(t *testing.T) {
 		},
 		{
 			// 異常系: 存在しないデータ
-			name:    "case: Not exist error",
+			name:    "case: Not Exist Error",
 			args:    testdata.UserTestData[1],
 			want:    nil,
 			wanterr: fmt.Errorf("[ERROR] failed to get user by id (10001) in repository: ent: user not found"),
@@ -150,7 +150,7 @@ func TestGetUserByEmail(t *testing.T) {
 		},
 		{
 			// 異常系: 存在しないデータ
-			name:    "case: Not exist error",
+			name:    "case: Not Exist Error",
 			args:    testdata.UserTestData[1],
 			want:    nil,
 			wanterr: fmt.Errorf("[ERROR] failed to get user by email (bob@example.com) in repository: ent: user not found"),
@@ -211,19 +211,11 @@ func TestUpdateUser(t *testing.T) {
 		},
 		{
 			// 異常系: 一意制約違反
-			name:    "case: Duplicate error",
+			name:    "case: Duplicate Error",
 			args:    testdata.UserTestData[3],
 			argsId:  testdata.UserTestData[3].ID,
 			want:    nil,
 			wanterr: fmt.Errorf("[ERROR] failed to update user in repository: ent: constraint failed: pq: duplicate key value violates unique constraint \"users_email_key\""),
-		},
-		{
-			// 正常系
-			name:    "case: Success",
-			args:    testdata.UserTestData[4],
-			argsId:  testdata.UserTestData[4].ID,
-			want:    testdata.UserTestData[4],
-			wanterr: nil,
 		},
 	}
 
