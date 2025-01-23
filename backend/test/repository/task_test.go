@@ -34,7 +34,7 @@ func TestCreateTask(t *testing.T) {
 		{
 			// 異常系: Not Empty制約違反
 			name:    "case: Missing Required Error",
-			args:    testdata.TaskTestData[0],
+			args:    testdata.TaskTestData[2],
 			want:    nil,
 			wanterr: fmt.Errorf("[ERROR] failed to create task in repository: ent: validator failed for field \"Task.title\": value is less than the required length"),
 		},
