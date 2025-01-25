@@ -144,8 +144,8 @@ func TestUpdateTask(t *testing.T) {
 		{
 			// 正常系
 			name:    "case: Success",
-			args:    testdata.TaskTestData[2],
-			want:    testdata.TaskTestData[2],
+			args:    testdata.TaskTestData[3],
+			want:    testdata.TaskTestData[3],
 			wanterr: nil,
 		},
 		{
@@ -153,7 +153,7 @@ func TestUpdateTask(t *testing.T) {
 			name:    "case: Not exist error",
 			args:    testdata.TaskTestData[1],
 			want:    nil,
-			wanterr: fmt.Errorf("[ERROR] failed to get task by id (10001) in repository: ent: task not found"),
+			wanterr: fmt.Errorf("[ERROR] failed to update task in repository: ent: task not found"),
 		},
 	}
 
