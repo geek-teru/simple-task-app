@@ -23,6 +23,6 @@ var TaskTestData = []*ent.Task{
 	},
 	&ent.Task{
 		// 更新後データ
-		ID: 1, Title: "", Description: "task1 description updated", Status: "TODO", DueDate: &t, UserID: 1,
+		ID: 1, Title: "task01 updated", Description: "task1 description updated updated", Status: "TODO", DueDate: &t, UserID: 1,
 	},
 }
