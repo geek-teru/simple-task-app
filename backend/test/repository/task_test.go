@@ -187,3 +187,51 @@ func TestUpdateTask(t *testing.T) {
 		}
 	}
 }
+
+func TestDeleteTask(t *testing.T) {
+
+	// fixturesの投入
+	loadFixture(t)
+
+	// テストケース
+	tests := []struct {
+		name string
+		args *ent.Task
+		want error
+	}{
+		{
+			// 正常系
+			name: "case: Success",
+			args: testdata.TaskTestData[0],
+			want: nil,
+		},
+		{
+			// 異常系: 存在しないデータ
+			name: "case: Not exist error",
+			args: testdata.TaskTestData[1],
+			want: fmt.Errorf("[ERROR] failed to delete task in repository: ent: task not found"),
+		},
+	}
+
+	repo := repository.NewTaskRepository(testClient)
+
+	for _, tt := range tests {
+		fmt.Println(tt.name)
+
+		// test対象メソッドの実行
+		got := repo.DeleteTask(context.Background(), tt.args.ID, tt.args.UserID)
+		// fmt.Println(got)
+
+		// 結果の比較
+		if tt.want == nil && got == nil {
+			fmt.Println("OK")
+		} else {
+			// 異常
+			if got.Error() != tt.want.Error() {
+				t.Errorf("[FAIL] return error mismatch\n got = %v,\n want= %v\n", got, tt.want)
+			} else {
+				fmt.Println("OK")
+			}
+		}
+	}
+}
