@@ -85,8 +85,8 @@ func TestListTask(t *testing.T) {
 		{
 			// 正常系
 			name:    "case: Success",
-			args:    testdata.TaskTestData[1].UserID,
-			want:    []*ent.Task{testdata.TaskTestData[1]},
+			args:    testdata.TaskTestData[0].UserID,
+			want:    testdata.TaskListTestData,
 			wanterr: nil,
 		},
 	}
@@ -96,7 +96,7 @@ func TestListTask(t *testing.T) {
 	for _, tt := range tests {
 		fmt.Println(tt.name)
 		//fmt.Println(tt.args) //debug
-		got, goterr := repo.ListTask(context.Background(), tt.args, 0, 2)
+		got, goterr := repo.ListTask(context.Background(), tt.args, 0, 4)
 		//fmt.Println(goterr)
 
 		// 結果の比較

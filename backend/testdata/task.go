@@ -26,3 +26,18 @@ var TaskTestData = []*ent.Task{
 		ID: 1, Title: "task01 updated", Description: "task1 description updated updated", Status: "TODO", DueDate: &t, UserID: 1,
 	},
 }
+
+var TaskListTestData = []*ent.Task{
+	&ent.Task{
+		ID: 1, Title: "task01", Description: "task01 description", Status: "TODO", DueDate: &t, UserID: 1,
+	},
+	&ent.Task{
+		ID: 2, Title: "task02", Description: "task02 description", Status: "TODO", DueDate: &t, UserID: 1,
+	},
+	&ent.Task{
+		ID: 3, Title: "task03", Description: "task03 description", Status: "TODO", DueDate: &t, UserID: 1,
+	},
+	&ent.Task{
+		ID: 4, Title: "task04", Description: "task04 description", Status: "TODO", DueDate: &t, UserID: 1,
+	},
+}

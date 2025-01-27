@@ -43,7 +43,7 @@ func (r *taskRepository) CreateTask(ctx context.Context, task *ent.Task) (*ent.T
 func (r *taskRepository) ListTask(ctx context.Context, userid int, offset int, limit int) ([]*ent.Task, error) {
 	tasks, err := r.client.Task.Query().
 		Where(task.UserIDEQ(userid)).
-		Order(ent.Desc(task.FieldID)).
+		Order(ent.Asc(task.FieldID)).
 		Offset(offset).
 		Limit(limit).
 		All(ctx)
