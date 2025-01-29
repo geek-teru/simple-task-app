@@ -116,7 +116,7 @@ func TestGetUserById(t *testing.T) {
 			name:    "case: Not Exist Error",
 			args:    testdata.UserTestData[1],
 			want:    nil,
-			wanterr: fmt.Errorf("[ERROR] failed to get user by email (carol@example.com) in repository: ent: user not found"),
+			wanterr: fmt.Errorf("[ERROR] failed to get user by id (10001) in repository: ent: user not found"),
 		},
 	}
 
@@ -182,7 +182,7 @@ func TestGetUserByEmail(t *testing.T) {
 			name:    "case: Not Exist Error",
 			args:    testdata.UserTestData[1],
 			want:    nil,
-			wanterr: fmt.Errorf("[ERROR] failed to get user by email (bob@example.com) in repository: ent: user not found"),
+			wanterr: fmt.Errorf("[ERROR] failed to get user by email (carol@example.com) in repository: ent: user not found"),
 		},
 	}
 
