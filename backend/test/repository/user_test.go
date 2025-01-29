@@ -90,12 +90,7 @@ func TestGetUserById(t *testing.T) {
 	// fixturesの投入
 	loadFixture(t)
 
-	t.Cleanup(func() {
-		_, err := testClient.User.Delete().Exec(context.Background())
-		if err != nil {
-			t.Fatalf("failed to delete users table: %v", err)
-		}
-	})
+	cleanupUsersTable(t, testClient)
 
 	// テストケース
 	tests := []struct {
@@ -156,12 +151,7 @@ func TestGetUserByEmail(t *testing.T) {
 	// fixturesの投入
 	loadFixture(t)
 
-	t.Cleanup(func() {
-		_, err := testClient.User.Delete().Exec(context.Background())
-		if err != nil {
-			t.Fatalf("failed to delete users table: %v", err)
-		}
-	})
+	cleanupUsersTable(t, testClient)
 
 	// テストケース
 	tests := []struct {
@@ -222,12 +212,7 @@ func TestUpdateUser(t *testing.T) {
 	// fixturesの投入
 	loadFixture(t)
 
-	t.Cleanup(func() {
-		_, err := testClient.User.Delete().Exec(context.Background())
-		if err != nil {
-			t.Fatalf("failed to delete users table: %v", err)
-		}
-	})
+	cleanupUsersTable(t, testClient)
 
 	// テストケース
 	tests := []struct {
