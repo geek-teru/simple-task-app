@@ -7,16 +7,24 @@ import (
 
 var UserTestData = []*ent.User{
 	&ent.User{
-		// 登録済み
+		// 登録済み1
 		ID: 1, Name: "alice", Email: "alice@example.com", Password: "$2a$10$IUjSMm7z8i6QaF5BfOc7wOKRkQqdDZ4TkmzutyAOe42vwteaKiqsO",
 	},
 	&ent.User{
+		// 登録済み2
+		ID: 2, Name: "bob", Email: "bob@example.com", Password: "xxxxxx",
+	},
+	&ent.User{
+		// 登録予定
+		ID: 10001, Name: "carol", Email: "carol@example.com", Password: "xxxxxx",
+	},
+	&ent.User{
 		// 未登録
-		ID: 10001, Name: "carol", Email: "carol@example.com", Password: "$2a$10$IUjSMm7z8i6QaF5BfOc7wOKRkQqdDZ4TkmzutyAOe42vwteaKiqsO",
+		ID: 999, Name: "david", Email: "david@example.com", Password: "xxxxxx",
 	},
 	&ent.User{
 		// 更新用
-		ID: 1, Name: "alice", Email: "alice@example.co.jp", Password: "$2a$10$IUjSMm7z8i6QaF5BfOc7wOKRkQqdDZ4TkmzutyAOe42vwteaKiqsO",
+		ID: 1, Name: "alice", Email: "alice_alice@example.co.jp", Password: "$2a$10$IUjSMm7z8i6QaF5BfOc7wOKRkQqdDZ4TkmzutyAOe42vwteaKiqsO",
 	},
 	&ent.User{
 		// 更新用(一意制約違反)
