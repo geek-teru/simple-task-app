@@ -12,10 +12,25 @@ import (
 	cmpopts "github.com/google/go-cmp/cmp/cmpopts"
 )
 
+func cleanupUsersTable(t *testing.T, client *ent.Client) {
+	t.Cleanup(func() {
+		_, err := testClient.Task.Delete().Exec(context.Background())
+		if err != nil {
+			t.Fatalf("failed to delete tasks table: %v", err)
+		}
+		_, err = client.User.Delete().Exec(context.Background())
+		if err != nil {
+			t.Fatalf("failed to delete users table: %v", err)
+		}
+	})
+}
+
 func TestCreateUser(t *testing.T) {
 
 	// fixturesの投入
 	loadFixture(t)
+
+	cleanupUsersTable(t, testClient)
 
 	// テストケース
 	tests := []struct {
@@ -75,6 +90,13 @@ func TestGetUserById(t *testing.T) {
 	// fixturesの投入
 	loadFixture(t)
 
+	t.Cleanup(func() {
+		_, err := testClient.User.Delete().Exec(context.Background())
+		if err != nil {
+			t.Fatalf("failed to delete users table: %v", err)
+		}
+	})
+
 	// テストケース
 	tests := []struct {
 		name    string
@@ -94,7 +116,7 @@ func TestGetUserById(t *testing.T) {
 			name:    "case: Not Exist Error",
 			args:    testdata.UserTestData[1],
 			want:    nil,
-			wanterr: fmt.Errorf("[ERROR] failed to get user by id (10001) in repository: ent: user not found"),
+			wanterr: fmt.Errorf("[ERROR] failed to get user by email (carol@example.com) in repository: ent: user not found"),
 		},
 	}
 
@@ -133,6 +155,13 @@ func TestGetUserByEmail(t *testing.T) {
 
 	// fixturesの投入
 	loadFixture(t)
+
+	t.Cleanup(func() {
+		_, err := testClient.User.Delete().Exec(context.Background())
+		if err != nil {
+			t.Fatalf("failed to delete users table: %v", err)
+		}
+	})
 
 	// テストケース
 	tests := []struct {
@@ -192,6 +221,13 @@ func TestUpdateUser(t *testing.T) {
 
 	// fixturesの投入
 	loadFixture(t)
+
+	t.Cleanup(func() {
+		_, err := testClient.User.Delete().Exec(context.Background())
+		if err != nil {
+			t.Fatalf("failed to delete users table: %v", err)
+		}
+	})
 
 	// テストケース
 	tests := []struct {
