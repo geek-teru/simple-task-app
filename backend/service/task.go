@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/geek-teru/simple-task-app/ent"
+	"github.com/geek-teru/simple-task-app/ent/task"
 	"github.com/geek-teru/simple-task-app/repository"
 )
 
@@ -17,28 +18,27 @@ type TaskServiceInterface interface {
 	DeleteTask(ctx context.Context, taskid int, userid int) (TaskResponse, error)
 }
 
-// TODO: Statusをenumに変更
 // TODO: ListTaskを実装
-
+// Todo: CreateTaskとUpdateTaskのuseridの取り扱いは共通にする。
 type (
 	TaskService struct {
 		repo repository.TaskRepositoryInterface
 	}
 
 	TaskRequest struct {
-		Title       string     `json:"title"`
-		Description string     `json:"description"`
-		DueDate     *time.Time `json:"due_date"`
-		Status      string     `json:"status"`
+		Title       string      `json:"title"`
+		Description string      `json:"description"`
+		DueDate     *time.Time  `json:"due_date"`
+		Status      task.Status `json:"status"`
 	}
 
 	TaskResponse struct {
-		ID          int        `json:"id"`
-		Title       string     `json:"title"`
-		Description string     `json:"description"`
-		DueDate     *time.Time `json:"due_date"`
-		Status      string     `json:"status"`
-		UserID      int        `json:"user_id"`
+		ID          int         `json:"id"`
+		Title       string      `json:"title"`
+		Description string      `json:"description"`
+		DueDate     *time.Time  `json:"due_date"`
+		Status      task.Status `json:"status"`
+		UserID      int         `json:"user_id"`
 	}
 )
 
@@ -67,9 +67,26 @@ func (u *TaskService) CreateTask(ctx context.Context, taskReq *TaskRequest, user
 	return TaskRes, nil
 }
 
-// func (u *TaskService) ListTask(ctx context.Context, userid int, offset int, limit int) ([]*ent.Task, error) {
+func (u *TaskService) ListTask(ctx context.Context, userid int, offset int, limit int) ([]TaskResponse, error) {
+	storedTask, err := u.repo.ListTask(context.Background(), userid, offset, limit)
+	if err != nil {
+		return nil, fmt.Errorf("%w", err)
+	}
 
-// }
+	TasksRes := []TaskResponse{}
+	for _, v := range storedTask {
+		t := TaskResponse{
+			ID:          int(v.ID),
+			Title:       v.Title,
+			Description: v.Description,
+			DueDate:     v.DueDate,
+			Status:      v.Status,
+			UserID:      v.UserID,
+		}
+		TasksRes = append(TasksRes, t)
+	}
+	return TasksRes, nil
+}
 
 func (u *TaskService) GetTaskById(ctx context.Context, taskid int, userid int) (TaskResponse, error) {
 	storedTask, err := u.repo.GetTaskById(context.Background(), taskid, userid)
@@ -78,8 +95,12 @@ func (u *TaskService) GetTaskById(ctx context.Context, taskid int, userid int) (
 	}
 
 	TaskRes := TaskResponse{
-		ID:   int(storedTask.ID),
-		Name: storedTask.Name,
+		ID:          int(storedTask.ID),
+		Title:       storedTask.Title,
+		Description: storedTask.Description,
+		DueDate:     storedTask.DueDate,
+		Status:      storedTask.Status,
+		UserID:      storedTask.UserID,
 	}
 
 	return TaskRes, nil
@@ -87,7 +108,7 @@ func (u *TaskService) GetTaskById(ctx context.Context, taskid int, userid int) (
 
 func (u *TaskService) UpdateTask(ctx context.Context, taskReq *TaskRequest, taskid int, userid int) (TaskResponse, error) {
 	task := &ent.Task{Title: taskReq.Title, Description: taskReq.Description, DueDate: taskReq.DueDate, Status: taskReq.Status, UserID: userid}
-	updatedTask, err := u.repo.UpdateTask(context.Background(), task, id)
+	updatedTask, err := u.repo.UpdateTask(context.Background(), task, taskid, userid)
 	if err != nil {
 		return TaskResponse{}, fmt.Errorf("%w", err)
 	}
