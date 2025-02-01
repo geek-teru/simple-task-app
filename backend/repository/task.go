@@ -26,6 +26,8 @@ func NewTaskRepository(client *ent.Client) TaskRepositoryInterface {
 	}
 }
 
+// Todo: CreateTaskとUpdateTaskのtaskid,useridの取り扱いは共通にする。
+// UpdateTaskでtaskidはパスパラメータ、useridはクレームから取得するようにしてService層で処理する。
 func (r *taskRepository) CreateTask(ctx context.Context, task *ent.Task) (*ent.Task, error) {
 	createdTask, err := r.client.Task.Create().
 		SetTitle(task.Title).
