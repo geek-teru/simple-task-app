@@ -11,15 +11,13 @@ import (
 )
 
 type TaskServiceInterface interface {
-	CreateTask(ctx context.Context, taskReq *TaskRequest, userid int) (TaskResponse, error)
-	//ListTask(ctx context.Context, userid int, offset int, limit int) ([]*ent.Task, error)
-	GetTaskById(ctx context.Context, taskid int, userid int) (TaskResponse, error)
-	UpdateTask(ctx context.Context, taskReq *TaskRequest, taskid int, userid int) (TaskResponse, error)
-	DeleteTask(ctx context.Context, taskid int, userid int) (TaskResponse, error)
+	CreateTask(taskReq *TaskRequest, userid int) (TaskResponse, error)
+	ListTask(userid int, offset int, limit int) ([]TaskResponse, error)
+	GetTaskById(taskid int, userid int) (TaskResponse, error)
+	UpdateTask(taskReq *TaskRequest, taskid int, userid int) (TaskResponse, error)
+	DeleteTask(taskid int, userid int) (TaskResponse, error)
 }
 
-// TODO: ListTaskを実装
-// Todo: CreateTaskとUpdateTaskのuseridの取り扱いは共通にする。
 type (
 	TaskService struct {
 		repo repository.TaskRepositoryInterface
@@ -48,7 +46,7 @@ func NewTaskService(repo repository.TaskRepositoryInterface) TaskServiceInterfac
 	}
 }
 
-func (u *TaskService) CreateTask(ctx context.Context, taskReq *TaskRequest, userid int) (TaskResponse, error) {
+func (u *TaskService) CreateTask(taskReq *TaskRequest, userid int) (TaskResponse, error) {
 	task := &ent.Task{Title: taskReq.Title, Description: taskReq.Description, DueDate: taskReq.DueDate, Status: taskReq.Status, UserID: userid}
 	createdTask, err := u.repo.CreateTask(context.Background(), task)
 	if err != nil {
@@ -67,7 +65,7 @@ func (u *TaskService) CreateTask(ctx context.Context, taskReq *TaskRequest, user
 	return TaskRes, nil
 }
 
-func (u *TaskService) ListTask(ctx context.Context, userid int, offset int, limit int) ([]TaskResponse, error) {
+func (u *TaskService) ListTask(userid int, offset int, limit int) ([]TaskResponse, error) {
 	storedTask, err := u.repo.ListTask(context.Background(), userid, offset, limit)
 	if err != nil {
 		return nil, fmt.Errorf("%w", err)
@@ -88,7 +86,7 @@ func (u *TaskService) ListTask(ctx context.Context, userid int, offset int, limi
 	return TasksRes, nil
 }
 
-func (u *TaskService) GetTaskById(ctx context.Context, taskid int, userid int) (TaskResponse, error) {
+func (u *TaskService) GetTaskById(taskid int, userid int) (TaskResponse, error) {
 	storedTask, err := u.repo.GetTaskById(context.Background(), taskid, userid)
 	if err != nil {
 		return TaskResponse{}, fmt.Errorf("%w", err)
@@ -106,7 +104,7 @@ func (u *TaskService) GetTaskById(ctx context.Context, taskid int, userid int) (
 	return TaskRes, nil
 }
 
-func (u *TaskService) UpdateTask(ctx context.Context, taskReq *TaskRequest, taskid int, userid int) (TaskResponse, error) {
+func (u *TaskService) UpdateTask(taskReq *TaskRequest, taskid int, userid int) (TaskResponse, error) {
 	task := &ent.Task{Title: taskReq.Title, Description: taskReq.Description, DueDate: taskReq.DueDate, Status: taskReq.Status, UserID: userid}
 	updatedTask, err := u.repo.UpdateTask(context.Background(), task, taskid, userid)
 	if err != nil {
@@ -125,7 +123,7 @@ func (u *TaskService) UpdateTask(ctx context.Context, taskReq *TaskRequest, task
 	return TaskRes, nil
 }
 
-func (u *TaskService) DeleteTask(ctx context.Context, taskid int, userid int) (TaskResponse, error) {
+func (u *TaskService) DeleteTask(taskid int, userid int) (TaskResponse, error) {
 	err := u.repo.DeleteTask(context.Background(), taskid, userid)
 	if err != nil {
 		return TaskResponse{}, fmt.Errorf("%w", err)
