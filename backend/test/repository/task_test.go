@@ -17,6 +17,8 @@ func TestCreateTask(t *testing.T) {
 	// fixturesの投入
 	loadFixture(t)
 
+	cleanupUsersTable(t, testClient)
+
 	// テストケース
 	tests := []struct {
 		name    string
@@ -75,6 +77,8 @@ func TestListTask(t *testing.T) {
 	// fixturesの投入
 	loadFixture(t)
 
+	cleanupUsersTable(t, testClient)
+
 	// テストケース
 	tests := []struct {
 		name    string
@@ -125,6 +129,8 @@ func TestGetTaskById(t *testing.T) {
 
 	// fixturesの投入
 	loadFixture(t)
+
+	cleanupUsersTable(t, testClient)
 
 	// テストケース
 	tests := []struct {
@@ -185,6 +191,8 @@ func TestUpdateTask(t *testing.T) {
 	// fixturesの投入
 	loadFixture(t)
 
+	cleanupUsersTable(t, testClient)
+
 	// テストケース
 	tests := []struct {
 		name    string
@@ -243,6 +251,8 @@ func TestDeleteTask(t *testing.T) {
 
 	// fixturesの投入
 	loadFixture(t)
+
+	cleanupUsersTable(t, testClient)
 
 	// テストケース
 	tests := []struct {

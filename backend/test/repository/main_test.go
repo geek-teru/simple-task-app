@@ -1,6 +1,7 @@
 package repository_test
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -68,4 +69,17 @@ func loadFixture(t *testing.T) {
 	if err := fixtures.Load(); err != nil {
 		t.Fatal(err)
 	}
+}
+
+func cleanupUsersTable(t *testing.T, client *ent.Client) {
+	t.Cleanup(func() {
+		_, err := testClient.Task.Delete().Exec(context.Background())
+		if err != nil {
+			t.Fatalf("failed to delete tasks table: %v", err)
+		}
+		_, err = client.User.Delete().Exec(context.Background())
+		if err != nil {
+			t.Fatalf("failed to delete users table: %v", err)
+		}
+	})
 }

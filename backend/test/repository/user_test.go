@@ -12,19 +12,6 @@ import (
 	cmpopts "github.com/google/go-cmp/cmp/cmpopts"
 )
 
-func cleanupUsersTable(t *testing.T, client *ent.Client) {
-	t.Cleanup(func() {
-		_, err := testClient.Task.Delete().Exec(context.Background())
-		if err != nil {
-			t.Fatalf("failed to delete tasks table: %v", err)
-		}
-		_, err = client.User.Delete().Exec(context.Background())
-		if err != nil {
-			t.Fatalf("failed to delete users table: %v", err)
-		}
-	})
-}
-
 func TestCreateUser(t *testing.T) {
 
 	// fixturesの投入

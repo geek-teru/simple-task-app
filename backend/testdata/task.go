@@ -56,6 +56,10 @@ var TaskReqTestData = []*service.TaskRequest{
 		// 必須項目なし
 		Title: "", Description: "task01 description", Status: "TODO", DueDate: &t,
 	},
+	&service.TaskRequest{
+		// 更新後データ
+		Title: "task01 updated", Description: "task1 description updated", Status: "TODO", DueDate: &t,
+	},
 }
 
 var TaskResTestData = []service.TaskResponse{
@@ -66,5 +70,13 @@ var TaskResTestData = []service.TaskResponse{
 	service.TaskResponse{
 		// 未登録
 		ID: 10001, Title: "task99", Description: "task99 description", Status: "TODO", DueDate: &t, UserID: 1,
+	},
+	service.TaskResponse{
+		// 必須項目なし
+		ID: 1, Title: "", Description: "", Status: "", DueDate: &t, UserID: 1,
+	},
+	service.TaskResponse{
+		// 更新後データ
+		ID: 1, Title: "task01 updated", Description: "task1 description updated", Status: "TODO", DueDate: &t, UserID: 1,
 	},
 }
