@@ -108,7 +108,7 @@ func TestGetTaskById(t *testing.T) {
 		},
 		{
 			// 異常系: 存在しないデータ
-			name:       "case: Duplicate error",
+			name:       "case: Not exist error",
 			args:       testdata.TaskTestData[1].ID,
 			mockreturn: nil,
 			mockerr:    fmt.Errorf("[ERROR] failed to get task by id (10001) in repository: ent: task not found"),
@@ -175,13 +175,15 @@ func TestUpdateTask(t *testing.T) {
 			wanterr:     nil,
 		},
 		{
-			// 異常系: Not Empty制約違反
-			name:       "case: Duplicate error",
-			args:       testdata.TaskReqTestData[2],
-			mockreturn: nil,
-			mockerr:    fmt.Errorf("[ERROR] failed to create task in repository: ent: validator failed for field \"Task.title\": value is less than the required length"),
-			want:       service.TaskResponse{},
-			wanterr:    fmt.Errorf("[ERROR] failed to create task in repository: ent: validator failed for field \"Task.title\": value is less than the required length"),
+			// 異常系: 存在しないデータ
+			name:        "case: Not exist error",
+			args:        testdata.TaskReqTestData[1],
+			args_id:     10001,
+			args_userid: 1,
+			mockreturn:  nil,
+			mockerr:     fmt.Errorf("[ERROR] failed to update task in repository: ent: task not found"),
+			want:        service.TaskResponse{},
+			wanterr:     fmt.Errorf("[ERROR] failed to update task in repository: ent: task not found"),
 		},
 	}
 
@@ -195,7 +197,7 @@ func TestUpdateTask(t *testing.T) {
 		//fmt.Println(tt.args) //debug
 		TaskRepo.EXPECT().UpdateTask(context.Background(), gomock.Any(), gomock.Any(), gomock.Any()).Return(tt.mockreturn, tt.mockerr)
 
-		got, goterr := TaskService.CreateTask(tt.args, tt.args_userid)
+		got, goterr := TaskService.UpdateTask(tt.args, tt.args_id, tt.args_userid)
 		// 結果の比較
 		if tt.wanterr == nil && goterr == nil {
 			// 正常
@@ -218,6 +220,66 @@ func TestUpdateTask(t *testing.T) {
 	}
 }
 
-func DeleteTask(t *testing.T) {
+func TestDeleteTask(t *testing.T) {
 
+	// テストケース
+	tests := []struct {
+		name        string
+		args        int
+		args_userid int
+		mockreturn  error
+		want        service.TaskResponse
+		wanterr     error
+	}{
+		{
+			// 正常系
+			name:        "case: Success",
+			args:        testdata.TaskTestData[0].ID,
+			args_userid: testdata.TaskTestData[0].UserID,
+			mockreturn:  nil,
+			want:        service.TaskResponse{},
+			wanterr:     nil,
+		},
+		{
+			// 異常系: 存在しないデータ
+			name:        "case: Not exist error",
+			args:        testdata.TaskTestData[1].ID,
+			args_userid: testdata.TaskTestData[1].UserID,
+			mockreturn:  fmt.Errorf("[ERROR] failed to delete task in repository: ent: task not found"),
+			want:        service.TaskResponse{},
+			wanterr:     fmt.Errorf("[ERROR] failed to delete task in repository: ent: task not found"),
+		},
+	}
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	TaskRepo := repository.NewMockTaskRepositoryInterface(ctrl)
+	TaskService := service.NewTaskService(TaskRepo)
+
+	for _, tt := range tests {
+		fmt.Println(tt.name)
+		//fmt.Println(tt.args) //debug
+		TaskRepo.EXPECT().DeleteTask(context.Background(), gomock.Any(), gomock.Any()).Return(tt.mockreturn)
+
+		got, goterr := TaskService.DeleteTask(tt.args, tt.args_userid)
+		// 結果の比較
+		if tt.wanterr == nil && goterr == nil {
+			// 正常
+			if diff := cmp.Diff(got, tt.want, cmpopts.IgnoreUnexported(ent.Task{})); diff != "" {
+				t.Errorf("[FAIL] return mismatch\n got = %v,\n want= %v\n", got, tt.want)
+			} else {
+				fmt.Println("OK")
+			}
+		} else if tt.wanterr == nil || goterr == nil {
+			// 期待値と結果のどちらか片方がnil
+			t.Errorf("[FAIL] return error mismatch\n goterr = %v,\n wanterr= %v\n", goterr, tt.wanterr)
+		} else {
+			// 異常
+			if goterr.Error() != tt.wanterr.Error() {
+				t.Errorf("[FAIL] return error mismatch\n goterr = %v,\n wanterr= %v\n", goterr, tt.wanterr)
+			} else {
+				fmt.Println("OK")
+			}
+		}
+	}
 }

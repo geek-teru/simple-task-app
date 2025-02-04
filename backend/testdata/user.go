@@ -11,10 +11,6 @@ var UserTestData = []*ent.User{
 		ID: 1, Name: "alice", Email: "alice@example.com", Password: "$2a$10$IUjSMm7z8i6QaF5BfOc7wOKRkQqdDZ4TkmzutyAOe42vwteaKiqsO",
 	},
 	&ent.User{
-		// 登録済み2
-		ID: 2, Name: "bob", Email: "bob@example.com", Password: "xxxxxx",
-	},
-	&ent.User{
 		// 登録予定
 		ID: 10001, Name: "carol", Email: "carol@example.com", Password: "xxxxxx",
 	},
@@ -38,8 +34,8 @@ var UserReqTestData = []*service.UserRequest{
 		Name: "alice", Email: "alice@example.com", Password: "alicepassword",
 	},
 	&service.UserRequest{
-		// 未登録
-		Name: "bob", Email: "bob@example.com", Password: "bobpassword",
+		// 登録予定
+		Name: "carol", Email: "carol@example.com", Password: "xxxxxx",
 	},
 	&service.UserRequest{
 		// パスワード間違い
@@ -54,6 +50,6 @@ var UserResTestData = []service.UserResponse{
 	},
 	service.UserResponse{
 		// 未登録
-		ID: 10001, Name: "bob",
+		ID: 10001, Name: "carol",
 	},
 }
