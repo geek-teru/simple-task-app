@@ -90,7 +90,7 @@ func TestListTask(t *testing.T) {
 			// 正常系
 			name:    "case: Success",
 			args:    testdata.TaskTestData[0].UserID,
-			want:    testdata.TaskListTestData,
+			want:    []*ent.Task{testdata.TaskTestData[0], testdata.TaskTestData[4], testdata.TaskTestData[5], testdata.TaskTestData[6]},
 			wanterr: nil,
 		},
 	}
