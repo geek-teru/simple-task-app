@@ -12,7 +12,7 @@ import (
 
 type TaskServiceInterface interface {
 	CreateTask(taskReq *TaskRequest, userid int) (TaskResponse, error)
-	ListTask(userid int, offset int, limit int) ([]TaskResponse, error)
+	ListTask(userid int, page int) ([]TaskResponse, error)
 	GetTaskById(taskid int, userid int) (TaskResponse, error)
 	UpdateTask(taskReq *TaskRequest, taskid int, userid int) (TaskResponse, error)
 	DeleteTask(taskid int, userid int) (TaskResponse, error)
@@ -65,7 +65,10 @@ func (u *TaskService) CreateTask(taskReq *TaskRequest, userid int) (TaskResponse
 	return TaskRes, nil
 }
 
-func (u *TaskService) ListTask(userid int, offset int, limit int) ([]TaskResponse, error) {
+func (u *TaskService) ListTask(userid int, page int) ([]TaskResponse, error) {
+	limit := 10
+	offset := (page - 1) * limit
+
 	storedTask, err := u.repo.ListTask(context.Background(), userid, offset, limit)
 	if err != nil {
 		return nil, fmt.Errorf("%w", err)

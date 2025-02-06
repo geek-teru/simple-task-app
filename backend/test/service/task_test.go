@@ -82,6 +82,59 @@ func TestCreateTask(t *testing.T) {
 
 func TestListTask(t *testing.T) {
 
+	// テストケース
+	tests := []struct {
+		name        string
+		args        *service.TaskRequest
+		args_userid int
+		mockreturn  []*ent.Task
+		mockerr     error
+		want        []service.TaskResponse
+		wanterr     error
+	}{
+		{
+			// 正常系
+			name:        "case: Success",
+			args:        testdata.TaskReqTestData[1],
+			args_userid: 1,
+			mockreturn:  []*ent.Task{testdata.TaskTestData[0], testdata.TaskTestData[4], testdata.TaskTestData[5], testdata.TaskTestData[6]},
+			mockerr:     nil,
+			want:        []service.TaskResponse{testdata.TaskResTestData[0], testdata.TaskResTestData[4], testdata.TaskResTestData[5], testdata.TaskResTestData[6]},
+			wanterr:     nil,
+		},
+	}
+
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	TaskRepo := repository.NewMockTaskRepositoryInterface(ctrl)
+	TaskService := service.NewTaskService(TaskRepo)
+
+	for _, tt := range tests {
+		fmt.Println(tt.name)
+		//fmt.Println(tt.args) //debug
+		TaskRepo.EXPECT().ListTask(context.Background(), gomock.Any(), gomock.Any(), gomock.Any()).Return(tt.mockreturn, tt.mockerr)
+
+		got, goterr := TaskService.ListTask(tt.args_userid, 1)
+		// 結果の比較
+		if tt.wanterr == nil && goterr == nil {
+			// 正常
+			if diff := cmp.Diff(got, tt.want, cmpopts.IgnoreUnexported(ent.Task{})); diff != "" {
+				t.Errorf("[FAIL] return mismatch\n got = %v,\n want= %v\n", got, tt.want)
+			} else {
+				fmt.Println("OK")
+			}
+		} else if tt.wanterr == nil || goterr == nil {
+			// 期待値と結果のどちらか片方がnil
+			t.Errorf("[FAIL] return error mismatch\n goterr = %v,\n wanterr= %v\n", goterr, tt.wanterr)
+		} else {
+			// 異常
+			if goterr.Error() != tt.wanterr.Error() {
+				t.Errorf("[FAIL] return error mismatch\n goterr = %v,\n wanterr= %v\n", goterr, tt.wanterr)
+			} else {
+				fmt.Println("OK")
+			}
+		}
+	}
 }
 
 func TestGetTaskById(t *testing.T) {

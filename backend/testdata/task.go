@@ -11,7 +11,7 @@ var t = time.Date(2024, time.January, 1, 0, 0, 0, 0, time.UTC)
 
 var TaskTestData = []*ent.Task{
 	&ent.Task{
-		// 登録済み
+		// 登録済み 1
 		ID: 1, Title: "task01", Description: "task01 description", Status: "TODO", DueDate: &t, UserID: 1,
 	},
 	&ent.Task{
@@ -26,19 +26,16 @@ var TaskTestData = []*ent.Task{
 		// 更新後データ
 		ID: 1, Title: "task01 updated", Description: "task1 description updated", Status: "TODO", DueDate: &t, UserID: 1,
 	},
-}
-
-var TaskListTestData = []*ent.Task{
 	&ent.Task{
-		ID: 1, Title: "task01", Description: "task01 description", Status: "TODO", DueDate: &t, UserID: 1,
-	},
-	&ent.Task{
+		// 登録済み 2
 		ID: 2, Title: "task02", Description: "task02 description", Status: "TODO", DueDate: &t, UserID: 1,
 	},
 	&ent.Task{
+		// 登録済み 3
 		ID: 3, Title: "task03", Description: "task03 description", Status: "TODO", DueDate: &t, UserID: 1,
 	},
 	&ent.Task{
+		// 登録済み 4
 		ID: 4, Title: "task04", Description: "task04 description", Status: "TODO", DueDate: &t, UserID: 1,
 	},
 }
@@ -78,5 +75,17 @@ var TaskResTestData = []service.TaskResponse{
 	service.TaskResponse{
 		// 更新後データ
 		ID: 1, Title: "task01 updated", Description: "task1 description updated", Status: "TODO", DueDate: &t, UserID: 1,
+	},
+	service.TaskResponse{
+		// 登録済み 2
+		ID: 2, Title: "task02", Description: "task02 description", Status: "TODO", DueDate: &t, UserID: 1,
+	},
+	service.TaskResponse{
+		// 登録済み 3
+		ID: 3, Title: "task03", Description: "task03 description", Status: "TODO", DueDate: &t, UserID: 1,
+	},
+	service.TaskResponse{
+		// 登録済み 4
+		ID: 4, Title: "task04", Description: "task04 description", Status: "TODO", DueDate: &t, UserID: 1,
 	},
 }
