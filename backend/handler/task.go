@@ -3,6 +3,7 @@ package handler
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	jwt "github.com/golang-jwt/jwt/v5"
 	echo "github.com/labstack/echo/v4"
@@ -28,6 +29,7 @@ func NewTaskHandler(service service.TaskServiceInterface, log *zap.Logger) *Task
 
 func (h *TaskHandler) CreateTask(c echo.Context) error {
 	// クレームからidを取得
+	// Todo: エラーハンドリングを追加する
 	user := c.Get("user").(*jwt.Token)
 	h.logger.Debug("[Debug] token ", zap.Any("user", user))
 
@@ -57,6 +59,7 @@ func (h *TaskHandler) CreateTask(c echo.Context) error {
 
 func (h *TaskHandler) ListTask(c echo.Context) error {
 	// クレームからidを取得
+	// Todo: エラーハンドリングを追加する
 	user := c.Get("user").(*jwt.Token)
 	h.logger.Debug("[Debug] token ", zap.Any("user", user))
 
@@ -67,10 +70,14 @@ func (h *TaskHandler) ListTask(c echo.Context) error {
 	h.logger.Debug("[Debug] claims ", zap.Any("userId", userId))
 
 	// クエリパラメータからページ番号を取得
-	page := c.QueryParam("page")
+	p := c.QueryParam("p")
+	page, err := strconv.Atoi(p)
+	if err != nil {
+		return c.String(http.StatusBadRequest, "Invalid param")
+	}
 
 	// Serviceの呼び出し
-	tokenString, err := h.Service.ListTask(TaskReq, page)
+	tokenString, err := h.Service.ListTask(int(userId.(float64)), page)
 	if err != nil {
 		h.logger.Error("[ERROR] ListTask", zap.Error(err))
 		return c.JSON(http.StatusInternalServerError, nil)
@@ -81,6 +88,7 @@ func (h *TaskHandler) ListTask(c echo.Context) error {
 
 func (h *TaskHandler) GetTaskById(c echo.Context) error {
 	// クレームからidを取得
+	// Todo: エラーハンドリングを追加する
 	user := c.Get("user").(*jwt.Token)
 	h.logger.Debug("[Debug] token ", zap.Any("user", user))
 
@@ -91,9 +99,14 @@ func (h *TaskHandler) GetTaskById(c echo.Context) error {
 	h.logger.Debug("[Debug] claims ", zap.Any("userId", userId))
 
 	// パスパラメータからTaskIdを取得
+	taskid := c.Param("taskid")
+	int_taskid, err := strconv.Atoi(taskid)
+	if err != nil {
+		return c.String(http.StatusBadRequest, "Invalid param")
+	}
 
 	// Serviceの呼び出し
-	TaskRes, err := h.Service.GetTaskById(int(TaskId.(float64)), int(userId.(float64)))
+	TaskRes, err := h.Service.GetTaskById(int_taskid, int(userId.(float64)))
 	if err != nil {
 		h.logger.Error("[ERROR] GetTaskById", zap.Error(err))
 		return c.JSON(http.StatusNotFound, "Not Found")
