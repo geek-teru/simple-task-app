@@ -10,7 +10,7 @@ import (
 	echomiddleware "github.com/labstack/echo/v4/middleware"
 )
 
-func NewRouter(e *echo.Echo, userHandler handler.UserHandler) {
+func NewRouter(e *echo.Echo, userHandler handler.UserHandler, taskHandler handler.TaskHandler) {
 	e.Use(echomiddleware.Logger())
 	e.Use(echomiddleware.Recover())
 	e.GET("/healthcheck", handler.Healthcheck)
@@ -23,6 +23,13 @@ func NewRouter(e *echo.Echo, userHandler handler.UserHandler) {
 	u.GET("", userHandler.GetUserProfile)
 	u.PUT("", userHandler.UpdateUserProfile)
 
+	t := e.Group("/task")
+	t.Use(JwtAuth())
+	t.POST("", taskHandler.CreateTask)
+	t.GET("", taskHandler.ListTask)
+	t.GET("/:taskid", taskHandler.ListTask)
+	// t.PUT("/:taskid", taskHandler.UpdateTask)
+	// t.DELETE("/:taskid", taskHandler.DeleteTask)
 }
 
 func JwtAuth() echo.MiddlewareFunc {

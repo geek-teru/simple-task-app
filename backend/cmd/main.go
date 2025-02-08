@@ -41,9 +41,14 @@ func main() {
 		userService := service.NewUserService(userRepo)
 		userHandler := handler.NewUserHandler(userService, logger)
 
+		// Task
+		taskRepo := repository.NewTaskRepository(client)
+		taskService := service.NewTaskService(taskRepo)
+		taskHandler := handler.NewTaskHandler(taskService, logger)
+
 		e := echo.New()
 		// e.HideBanner = true
-		router.NewRouter(e, *userHandler)
+		router.NewRouter(e, *userHandler, *taskHandler)
 
 		// Server startup
 		if err := e.Start(":" + cfg.Port); err != nil {
