@@ -277,16 +277,16 @@ mockgen -source=task.go -destination=./mock/task_mock.go -package=repository
 ## E2Eテスト
 ```
 # サインアップ
-curl -X POST  http://localhost:8080/signup -H "Content-Type: application/json" -d '{"Name": "teru", "Email":"teru@example.com", "Password": "terupassword"}'
+curl -X POST  http://localhost:8080/signup -H "Content-Type: application/json" -d '{"name": "teru", "email":"teru@example.com", "password": "terupassword"}'
 
 # サインイン
-token=$(curl -X POST  http://localhost:8080/signin -H "Content-Type: application/json" -d '{"Name": "teru", "Email":"teru@example.com", "Password": "terupassword"}'| tr -d '"')
+token=$(curl -X POST  http://localhost:8080/signin -H "Content-Type: application/json" -d '{"name": "teru", "email":"teru@example.com", "password": "terupassword"}'| tr -d '"')
 
 # task登録
 curl -X POST http://localhost:8080/task \
 -H "Authorization: Bearer $token" \
 -H "Content-Type: application/json" \
--d '{"Title": "task01", "Description": "task01description", "Status": "TODO", "DueDate": "2024-01-01T00:00:00Z"}'
+-d '{"title": "task01", "description": "task01description", "status": "TODO", "due_date": "2024-01-01T00:00:00Z"}'
 
 # task一覧
 curl 
