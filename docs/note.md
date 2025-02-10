@@ -289,8 +289,11 @@ curl -X POST http://localhost:8080/task \
 -d '{"title": "task01", "description": "task01description", "status": "TODO", "due_date": "2024-01-01T00:00:00Z"}'
 
 # task一覧
-curl 
+curl -X GET http://localhost:8080/task?p=1 \
+-H "Authorization: Bearer $token" \
+-H "Content-Type: application/json"
 
-
-
+# task参照
+curl -X GET http://localhost:8080/task/10001 \
+-H "Authorization: Bearer $token"
 ```
