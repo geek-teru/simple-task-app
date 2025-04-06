@@ -27,7 +27,7 @@ func NewRouter(e *echo.Echo, userHandler handler.UserHandler, taskHandler handle
 	t.Use(JwtAuth())
 	t.POST("", taskHandler.CreateTask)
 	t.GET("", taskHandler.ListTask)
-	t.GET("/:taskid", taskHandler.ListTask)
+	t.GET("/:taskid", taskHandler.GetTaskById)
 	// t.PUT("/:taskid", taskHandler.UpdateTask)
 	// t.DELETE("/:taskid", taskHandler.DeleteTask)
 }
