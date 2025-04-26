@@ -3,6 +3,8 @@
 package ent
 
 import (
+	"time"
+
 	"github.com/geek-teru/simple-task-app/ent/schema"
 	"github.com/geek-teru/simple-task-app/ent/task"
 	"github.com/geek-teru/simple-task-app/ent/user"
@@ -15,9 +17,35 @@ func init() {
 	taskFields := schema.Task{}.Fields()
 	_ = taskFields
 	// taskDescTitle is the schema descriptor for title field.
-	taskDescTitle := taskFields[1].Descriptor()
+	taskDescTitle := taskFields[0].Descriptor()
+	// task.DefaultTitle holds the default value on creation for the title field.
+	task.DefaultTitle = taskDescTitle.Default.(string)
 	// task.TitleValidator is a validator for the "title" field. It is called by the builders before save.
 	task.TitleValidator = taskDescTitle.Validators[0].(func(string) error)
+	// taskDescDescription is the schema descriptor for description field.
+	taskDescDescription := taskFields[1].Descriptor()
+	// task.DefaultDescription holds the default value on creation for the description field.
+	task.DefaultDescription = taskDescDescription.Default.(string)
+	// task.DescriptionValidator is a validator for the "description" field. It is called by the builders before save.
+	task.DescriptionValidator = taskDescDescription.Validators[0].(func(string) error)
+	// taskDescDueDate is the schema descriptor for due_date field.
+	taskDescDueDate := taskFields[2].Descriptor()
+	// task.DefaultDueDate holds the default value on creation for the due_date field.
+	task.DefaultDueDate = taskDescDueDate.Default.(func() time.Time)
+	// taskDescStatus is the schema descriptor for status field.
+	taskDescStatus := taskFields[3].Descriptor()
+	// task.DefaultStatus holds the default value on creation for the status field.
+	task.DefaultStatus = taskDescStatus.Default.(int)
+	// taskDescCreatedAt is the schema descriptor for created_at field.
+	taskDescCreatedAt := taskFields[5].Descriptor()
+	// task.DefaultCreatedAt holds the default value on creation for the created_at field.
+	task.DefaultCreatedAt = taskDescCreatedAt.Default.(func() time.Time)
+	// taskDescUpdatedAt is the schema descriptor for updated_at field.
+	taskDescUpdatedAt := taskFields[6].Descriptor()
+	// task.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	task.DefaultUpdatedAt = taskDescUpdatedAt.Default.(func() time.Time)
+	// task.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	task.UpdateDefaultUpdatedAt = taskDescUpdatedAt.UpdateDefault.(func() time.Time)
 	userFields := schema.User{}.Fields()
 	_ = userFields
 	// userDescName is the schema descriptor for name field.

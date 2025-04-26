@@ -89,7 +89,7 @@ erDiagram
         varchar(100) title "タイトル"
         varchar(255) description "詳細"
         date due_date "期限日"
-        int status "ステータス (e.g., TODO, IN_PROGRESS, DONE)"
+        int status "ステータス (e.g., NONE, TODO, IN_PROGRESS, DONE)"
         int user_id FK "ユーザーID"
         timestamp created_at
         timestamp updateded_at
@@ -100,9 +100,11 @@ erDiagram
     User ||--o{ Task : "1対多"
 ```
 
-### インデックス
+### インデックス設計
 
-- id と created_at だけインデックスを設定しておく
+- フィルターに指定するキーを複合インデックスにしておく
+- ソートに使用するキーはインデックスを貼らない
+- 命名規則 idx_key1_key2
 
 ## Backend
 

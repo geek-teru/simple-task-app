@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/geek-teru/simple-task-app/ent"
-	"github.com/geek-teru/simple-task-app/ent/task"
 	"github.com/geek-teru/simple-task-app/repository"
 )
 
@@ -24,19 +23,19 @@ type (
 	}
 
 	TaskRequest struct {
-		Title       string      `json:"title"`
-		Description string      `json:"description"`
-		DueDate     *time.Time  `json:"due_date"`
-		Status      task.Status `json:"status"`
+		Title       string    `json:"title"`
+		Description string    `json:"description"`
+		DueDate     time.Time `json:"due_date"`
+		Status      int       `json:"status"`
 	}
 
 	TaskResponse struct {
-		ID          int         `json:"id"`
-		Title       string      `json:"title"`
-		Description string      `json:"description"`
-		DueDate     *time.Time  `json:"due_date"`
-		Status      task.Status `json:"status"`
-		UserID      int         `json:"user_id"`
+		ID          int       `json:"id"`
+		Title       string    `json:"title"`
+		Description string    `json:"description"`
+		DueDate     time.Time `json:"due_date"`
+		Status      int       `json:"status"`
+		UserID      int       `json:"user_id"`
 	}
 )
 

@@ -11,11 +11,15 @@ var (
 	// TasksColumns holds the columns for the "tasks" table.
 	TasksColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "title", Type: field.TypeString},
-		{Name: "description", Type: field.TypeString, Nullable: true},
-		{Name: "due_date", Type: field.TypeTime, Nullable: true},
-		{Name: "status", Type: field.TypeEnum, Enums: []string{"TODO", "IN_PROGRESS", "DONE"}, Default: "TODO"},
+		{Name: "title", Type: field.TypeString, Size: 100, Default: ""},
+		{Name: "description", Type: field.TypeString, Size: 255, Default: ""},
+		{Name: "due_date", Type: field.TypeTime},
+		{Name: "status", Type: field.TypeInt, Default: 0},
 		{Name: "user_id", Type: field.TypeInt},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true},
+		{Name: "user_tasks", Type: field.TypeInt, Nullable: true},
 	}
 	// TasksTable holds the schema information for the "tasks" table.
 	TasksTable = &schema.Table{
@@ -25,9 +29,16 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "tasks_users_tasks",
-				Columns:    []*schema.Column{TasksColumns[5]},
+				Columns:    []*schema.Column{TasksColumns[9]},
 				RefColumns: []*schema.Column{UsersColumns[0]},
-				OnDelete:   schema.NoAction,
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "idx_user_id_status_deleted_at",
+				Unique:  false,
+				Columns: []*schema.Column{TasksColumns[5], TasksColumns[4], TasksColumns[8]},
 			},
 		},
 	}

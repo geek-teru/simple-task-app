@@ -28,7 +28,7 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "task" package.
 	TasksInverseTable = "tasks"
 	// TasksColumn is the table column denoting the tasks relation/edge.
-	TasksColumn = "user_id"
+	TasksColumn = "user_tasks"
 )
 
 // Columns holds all SQL columns for user fields.

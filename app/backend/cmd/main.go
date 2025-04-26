@@ -5,12 +5,12 @@ import (
 	"os"
 
 	"github.com/geek-teru/simple-task-app/config"
-	"github.com/geek-teru/simple-task-app/db"
 	"github.com/geek-teru/simple-task-app/handler"
-	"github.com/geek-teru/simple-task-app/log"
 	"github.com/geek-teru/simple-task-app/repository"
 	"github.com/geek-teru/simple-task-app/router"
 	"github.com/geek-teru/simple-task-app/service"
+	"github.com/geek-teru/simple-task-app/util/db"
+	"github.com/geek-teru/simple-task-app/util/log"
 	echo "github.com/labstack/echo/v4"
 )
 
