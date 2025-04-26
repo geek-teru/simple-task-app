@@ -1,40 +1,59 @@
 # simple-task-app
 
+## 概要
+
 シンプルなタスク管理アプリケーション
+
+## 実装のポイント
+
+### 開発アプローチ
+
+- Backend,Frontend の共通認識となる RESTAPI の仕様を OpenAPI で定義しておき、スキーマドリブンで開発する。
+
+### Backend API
+
+- シンプルな CRUD 機能を提供する RESTfulAPI。
+- クリーンアーキテクチャを意識する。
+  - エンティティ、ユースケース、インターフェース（WebAPI, DB など）に関心を分離する
+  - 依存性の方向はビジネスルール（エンティティ）に向かって依存する。
+  - インターフェースを実装し、依存性を逆転させ DI するようにする。（テストを実装しやすくする）
+- 認証機能を実装。AWS Cognito で認証する。
+- バリデーション機能を実装
+- handler 層は oapi-codegen で OpenAPI からコード生成する
+- テストを実装
+
+### infra
+
+- Terraform で IaC
+
+### Other
+
+- GithubActions でビルド・デプロイを自動化
 
 ## 環境
 
 ### Backend API
 
-    * Language: Go 1.23.4
-    * Web FW: Echo
-    * ORM: ent
+- Language: Go 1.23.4
+- Web FW: Echo
+- handler: oapi-codegen
+- ORM: ent
 
 ### Database
 
-    * RDBMS: PostgreSQL
+- RDBMS: PostgreSQL
 
 ### infra
 
-    * LB: AWS ALB
-    * Computing: AWS ECS
-    * DB: AWS RDS Aurora
-    * IaC: Terraform
+- LB: AWS ALB
+- Computing: AWS ECS
+- DB: AWS RDS Aurora
+- IaC: Terraform
 
 ### Other
 
-    * CI/CD: Github Actions
-    * Container: Docker
-
-## 実装のポイント
-
-- レイヤードアーキテクチャ
-- シンプルな CRUD を実装
-- 認証機能を実装
-- バリデーション機能を実装
-- テストを実装
-- Terraform でインフラのコード化
-- GithubActions でビルド・デプロイを自動化
+- CI/CD: Github Actions
+- Container: Docker
 
 ## DB 設計
 
@@ -70,7 +89,7 @@ erDiagram
         varchar(100) title "タイトル"
         varchar(255) description "詳細"
         date due_date "期限日"
-        int status "ステータス (e.g., TODO, IN_PROGRESS, DONE)"
+        int status "ステータス (e.g., NONE, TODO, IN_PROGRESS, DONE)"
         int user_id FK "ユーザーID"
         timestamp created_at
         timestamp updateded_at
@@ -81,11 +100,13 @@ erDiagram
     User ||--o{ Task : "1対多"
 ```
 
-### インデックス
+### インデックス設計
 
-- id と created_at だけインデックスを設定しておく
+- フィルターに指定するキーを複合インデックスにしておく
+- ソートに使用するキーはインデックスを貼らない
+- 命名規則 idx_key1_key2
 
-## ディレクトリ構成
+## Backend
 
 ディレクトリ構成は以下の通り
 

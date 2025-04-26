@@ -2,47 +2,47 @@
   title: "task01"
   description: "task01 description"
   due_date: "2024-01-01T00:00:00Z"
-  status: "TODO"
+  status: 0
   user_id: 1
 - id: 2
   title: "task02"
   description: "task02 description"
   due_date: "2024-01-01T00:00:00Z"
-  status: "TODO"
+  status: 0
   user_id: 1
 - id: 3
   title: "task03"
   description: "task03 description"
   due_date: "2024-01-01T00:00:00Z"
-  status: "TODO"
+  status: 0
   user_id: 1
 - id: 4
   title: "task04"
   description: "task04 description"
   due_date: "2024-01-01T00:00:00Z"
-  status: "TODO"
+  status: 0
   user_id: 1
 - id: 5
   title: "task05"
   description: "task05 description"
   due_date: "2024-01-01T00:00:00Z"
-  status: "TODO"
+  status: 0
   user_id: 2
 - id: 6
   title: "task06"
   description: "task06 description"
   due_date: "2024-01-01T00:00:00Z"
-  status: "TODO"
+  status: 0
   user_id: 2
 - id: 7
   title: "task07"
   description: "task07 description"
   due_date: "2024-01-01T00:00:00Z"
-  status: "TODO"
+  status: 0
   user_id: 2
 - id: 8
   title: "task08"
   description: "task08 description"
   due_date: "2024-01-01T00:00:00Z"
-  status: "TODO"
+  status: 0
   user_id: 2

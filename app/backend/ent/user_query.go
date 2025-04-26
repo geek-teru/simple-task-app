@@ -413,9 +413,7 @@ func (uq *UserQuery) loadTasks(ctx context.Context, query *TaskQuery, nodes []*U
 			init(nodes[i])
 		}
 	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(task.FieldUserID)
-	}
+	query.withFKs = true
 	query.Where(predicate.Task(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(user.TasksColumn), fks...))
 	}))
@@ -424,10 +422,13 @@ func (uq *UserQuery) loadTasks(ctx context.Context, query *TaskQuery, nodes []*U
 		return err
 	}
 	for _, n := range neighbors {
-		fk := n.UserID
-		node, ok := nodeids[fk]
+		fk := n.user_tasks
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "user_tasks" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
 		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "user_id" returned %v for node %v`, fk, n.ID)
+			return fmt.Errorf(`unexpected referenced foreign-key "user_tasks" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

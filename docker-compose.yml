@@ -22,7 +22,7 @@ services:
       - DB_HOST=postgres.local
       - DB_PORT=5432
       - DB_NAME=sampledb
-    entrypoint: [ "./main", "migrate" ]
+    entrypoint: ["./main", "migrate"]
     depends_on:
       - postgres
   backend:
@@ -42,13 +42,11 @@ services:
     depends_on:
       - postgres
       - migrate
-  swagger-ui:
-    image: swaggerapi/swagger-ui
-    container_name: swagger-ui.local
-    volumes:
-      - ./app/open-api:/usr/share/nginx/html/
-    environment:
-      API_URL: http://localhost:8081/openapi.yaml
+  prism:
+    image: stoplight/prism:latest
+    container_name: prism.local
     ports:
-      - 8081:8080
-    platform: linux/amd64
+      - "4010:4010"
+    volumes:
+      - ./app/open-api:/mock
+    command: mock -h 0.0.0.0 /mock/openapi.yaml

@@ -10,49 +10,31 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/geek-teru/simple-task-app/ent/task"
-	"github.com/geek-teru/simple-task-app/ent/user"
 )
 
 // Task is the model entity for the Task schema.
 type Task struct {
 	config `json:"-"`
 	// ID of the ent.
-	// タスクID
 	ID int `json:"id,omitempty"`
 	// タイトル
 	Title string `json:"title,omitempty"`
 	// 詳細
 	Description string `json:"description,omitempty"`
 	// 期限日
-	DueDate *time.Time `json:"due_date,omitempty"`
+	DueDate time.Time `json:"due_date,omitempty"`
 	// ステータス
-	Status task.Status `json:"status,omitempty"`
+	Status int `json:"status,omitempty"`
 	// ユーザーID
 	UserID int `json:"user_id,omitempty"`
-	// Edges holds the relations/edges for other nodes in the graph.
-	// The values are being populated by the TaskQuery when eager-loading is set.
-	Edges        TaskEdges `json:"edges"`
+	// 作成日時
+	CreatedAt time.Time `json:"created_at,omitempty"`
+	// 更新日時
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	// 削除日時
+	DeletedAt    *time.Time `json:"deleted_at,omitempty"`
+	user_tasks   *int
 	selectValues sql.SelectValues
-}
-
-// TaskEdges holds the relations/edges for other nodes in the graph.
-type TaskEdges struct {
-	// User holds the value of the user edge.
-	User *User `json:"user,omitempty"`
-	// loadedTypes holds the information for reporting if a
-	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
-}
-
-// UserOrErr returns the User value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e TaskEdges) UserOrErr() (*User, error) {
-	if e.User != nil {
-		return e.User, nil
-	} else if e.loadedTypes[0] {
-		return nil, &NotFoundError{label: user.Label}
-	}
-	return nil, &NotLoadedError{edge: "user"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -60,12 +42,14 @@ func (*Task) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case task.FieldID, task.FieldUserID:
+		case task.FieldID, task.FieldStatus, task.FieldUserID:
 			values[i] = new(sql.NullInt64)
-		case task.FieldTitle, task.FieldDescription, task.FieldStatus:
+		case task.FieldTitle, task.FieldDescription:
 			values[i] = new(sql.NullString)
-		case task.FieldDueDate:
+		case task.FieldDueDate, task.FieldCreatedAt, task.FieldUpdatedAt, task.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
+		case task.ForeignKeys[0]: // user_tasks
+			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -103,20 +87,45 @@ func (t *Task) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field due_date", values[i])
 			} else if value.Valid {
-				t.DueDate = new(time.Time)
-				*t.DueDate = value.Time
+				t.DueDate = value.Time
 			}
 		case task.FieldStatus:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field status", values[i])
 			} else if value.Valid {
-				t.Status = task.Status(value.String)
+				t.Status = int(value.Int64)
 			}
 		case task.FieldUserID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field user_id", values[i])
 			} else if value.Valid {
 				t.UserID = int(value.Int64)
+			}
+		case task.FieldCreatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field created_at", values[i])
+			} else if value.Valid {
+				t.CreatedAt = value.Time
+			}
+		case task.FieldUpdatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
+			} else if value.Valid {
+				t.UpdatedAt = value.Time
+			}
+		case task.FieldDeletedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
+			} else if value.Valid {
+				t.DeletedAt = new(time.Time)
+				*t.DeletedAt = value.Time
+			}
+		case task.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field user_tasks", value)
+			} else if value.Valid {
+				t.user_tasks = new(int)
+				*t.user_tasks = int(value.Int64)
 			}
 		default:
 			t.selectValues.Set(columns[i], values[i])
@@ -129,11 +138,6 @@ func (t *Task) assignValues(columns []string, values []any) error {
 // This includes values selected through modifiers, order, etc.
 func (t *Task) Value(name string) (ent.Value, error) {
 	return t.selectValues.Get(name)
-}
-
-// QueryUser queries the "user" edge of the Task entity.
-func (t *Task) QueryUser() *UserQuery {
-	return NewTaskClient(t.config).QueryUser(t)
 }
 
 // Update returns a builder for updating this Task.
@@ -165,16 +169,25 @@ func (t *Task) String() string {
 	builder.WriteString("description=")
 	builder.WriteString(t.Description)
 	builder.WriteString(", ")
-	if v := t.DueDate; v != nil {
-		builder.WriteString("due_date=")
-		builder.WriteString(v.Format(time.ANSIC))
-	}
+	builder.WriteString("due_date=")
+	builder.WriteString(t.DueDate.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("status=")
 	builder.WriteString(fmt.Sprintf("%v", t.Status))
 	builder.WriteString(", ")
 	builder.WriteString("user_id=")
 	builder.WriteString(fmt.Sprintf("%v", t.UserID))
+	builder.WriteString(", ")
+	builder.WriteString("created_at=")
+	builder.WriteString(t.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	builder.WriteString("updated_at=")
+	builder.WriteString(t.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(", ")
+	if v := t.DeletedAt; v != nil {
+		builder.WriteString("deleted_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

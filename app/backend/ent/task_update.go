@@ -13,7 +13,6 @@ import (
 	"entgo.io/ent/schema/field"
 	"github.com/geek-teru/simple-task-app/ent/predicate"
 	"github.com/geek-teru/simple-task-app/ent/task"
-	"github.com/geek-teru/simple-task-app/ent/user"
 )
 
 // TaskUpdate is the builder for updating Task entities.
@@ -57,12 +56,6 @@ func (tu *TaskUpdate) SetNillableDescription(s *string) *TaskUpdate {
 	return tu
 }
 
-// ClearDescription clears the value of the "description" field.
-func (tu *TaskUpdate) ClearDescription() *TaskUpdate {
-	tu.mutation.ClearDescription()
-	return tu
-}
-
 // SetDueDate sets the "due_date" field.
 func (tu *TaskUpdate) SetDueDate(t time.Time) *TaskUpdate {
 	tu.mutation.SetDueDate(t)
@@ -77,28 +70,30 @@ func (tu *TaskUpdate) SetNillableDueDate(t *time.Time) *TaskUpdate {
 	return tu
 }
 
-// ClearDueDate clears the value of the "due_date" field.
-func (tu *TaskUpdate) ClearDueDate() *TaskUpdate {
-	tu.mutation.ClearDueDate()
-	return tu
-}
-
 // SetStatus sets the "status" field.
-func (tu *TaskUpdate) SetStatus(t task.Status) *TaskUpdate {
-	tu.mutation.SetStatus(t)
+func (tu *TaskUpdate) SetStatus(i int) *TaskUpdate {
+	tu.mutation.ResetStatus()
+	tu.mutation.SetStatus(i)
 	return tu
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (tu *TaskUpdate) SetNillableStatus(t *task.Status) *TaskUpdate {
-	if t != nil {
-		tu.SetStatus(*t)
+func (tu *TaskUpdate) SetNillableStatus(i *int) *TaskUpdate {
+	if i != nil {
+		tu.SetStatus(*i)
 	}
+	return tu
+}
+
+// AddStatus adds i to the "status" field.
+func (tu *TaskUpdate) AddStatus(i int) *TaskUpdate {
+	tu.mutation.AddStatus(i)
 	return tu
 }
 
 // SetUserID sets the "user_id" field.
 func (tu *TaskUpdate) SetUserID(i int) *TaskUpdate {
+	tu.mutation.ResetUserID()
 	tu.mutation.SetUserID(i)
 	return tu
 }
@@ -111,9 +106,36 @@ func (tu *TaskUpdate) SetNillableUserID(i *int) *TaskUpdate {
 	return tu
 }
 
-// SetUser sets the "user" edge to the User entity.
-func (tu *TaskUpdate) SetUser(u *User) *TaskUpdate {
-	return tu.SetUserID(u.ID)
+// AddUserID adds i to the "user_id" field.
+func (tu *TaskUpdate) AddUserID(i int) *TaskUpdate {
+	tu.mutation.AddUserID(i)
+	return tu
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (tu *TaskUpdate) SetUpdatedAt(t time.Time) *TaskUpdate {
+	tu.mutation.SetUpdatedAt(t)
+	return tu
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (tu *TaskUpdate) SetDeletedAt(t time.Time) *TaskUpdate {
+	tu.mutation.SetDeletedAt(t)
+	return tu
+}
+
+// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
+func (tu *TaskUpdate) SetNillableDeletedAt(t *time.Time) *TaskUpdate {
+	if t != nil {
+		tu.SetDeletedAt(*t)
+	}
+	return tu
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (tu *TaskUpdate) ClearDeletedAt() *TaskUpdate {
+	tu.mutation.ClearDeletedAt()
+	return tu
 }
 
 // Mutation returns the TaskMutation object of the builder.
@@ -121,14 +143,9 @@ func (tu *TaskUpdate) Mutation() *TaskMutation {
 	return tu.mutation
 }
 
-// ClearUser clears the "user" edge to the User entity.
-func (tu *TaskUpdate) ClearUser() *TaskUpdate {
-	tu.mutation.ClearUser()
-	return tu
-}
-
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (tu *TaskUpdate) Save(ctx context.Context) (int, error) {
+	tu.defaults()
 	return withHooks(ctx, tu.sqlSave, tu.mutation, tu.hooks)
 }
 
@@ -154,6 +171,14 @@ func (tu *TaskUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (tu *TaskUpdate) defaults() {
+	if _, ok := tu.mutation.UpdatedAt(); !ok {
+		v := task.UpdateDefaultUpdatedAt()
+		tu.mutation.SetUpdatedAt(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (tu *TaskUpdate) check() error {
 	if v, ok := tu.mutation.Title(); ok {
@@ -161,13 +186,10 @@ func (tu *TaskUpdate) check() error {
 			return &ValidationError{Name: "title", err: fmt.Errorf(`ent: validator failed for field "Task.title": %w`, err)}
 		}
 	}
-	if v, ok := tu.mutation.Status(); ok {
-		if err := task.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Task.status": %w`, err)}
+	if v, ok := tu.mutation.Description(); ok {
+		if err := task.DescriptionValidator(v); err != nil {
+			return &ValidationError{Name: "description", err: fmt.Errorf(`ent: validator failed for field "Task.description": %w`, err)}
 		}
-	}
-	if tu.mutation.UserCleared() && len(tu.mutation.UserIDs()) > 0 {
-		return errors.New(`ent: clearing a required unique edge "Task.user"`)
 	}
 	return nil
 }
@@ -190,46 +212,29 @@ func (tu *TaskUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := tu.mutation.Description(); ok {
 		_spec.SetField(task.FieldDescription, field.TypeString, value)
 	}
-	if tu.mutation.DescriptionCleared() {
-		_spec.ClearField(task.FieldDescription, field.TypeString)
-	}
 	if value, ok := tu.mutation.DueDate(); ok {
 		_spec.SetField(task.FieldDueDate, field.TypeTime, value)
 	}
-	if tu.mutation.DueDateCleared() {
-		_spec.ClearField(task.FieldDueDate, field.TypeTime)
-	}
 	if value, ok := tu.mutation.Status(); ok {
-		_spec.SetField(task.FieldStatus, field.TypeEnum, value)
+		_spec.SetField(task.FieldStatus, field.TypeInt, value)
 	}
-	if tu.mutation.UserCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   task.UserTable,
-			Columns: []string{task.UserColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	if value, ok := tu.mutation.AddedStatus(); ok {
+		_spec.AddField(task.FieldStatus, field.TypeInt, value)
 	}
-	if nodes := tu.mutation.UserIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   task.UserTable,
-			Columns: []string{task.UserColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	if value, ok := tu.mutation.UserID(); ok {
+		_spec.SetField(task.FieldUserID, field.TypeInt, value)
+	}
+	if value, ok := tu.mutation.AddedUserID(); ok {
+		_spec.AddField(task.FieldUserID, field.TypeInt, value)
+	}
+	if value, ok := tu.mutation.UpdatedAt(); ok {
+		_spec.SetField(task.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if value, ok := tu.mutation.DeletedAt(); ok {
+		_spec.SetField(task.FieldDeletedAt, field.TypeTime, value)
+	}
+	if tu.mutation.DeletedAtCleared() {
+		_spec.ClearField(task.FieldDeletedAt, field.TypeTime)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, tu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -279,12 +284,6 @@ func (tuo *TaskUpdateOne) SetNillableDescription(s *string) *TaskUpdateOne {
 	return tuo
 }
 
-// ClearDescription clears the value of the "description" field.
-func (tuo *TaskUpdateOne) ClearDescription() *TaskUpdateOne {
-	tuo.mutation.ClearDescription()
-	return tuo
-}
-
 // SetDueDate sets the "due_date" field.
 func (tuo *TaskUpdateOne) SetDueDate(t time.Time) *TaskUpdateOne {
 	tuo.mutation.SetDueDate(t)
@@ -299,28 +298,30 @@ func (tuo *TaskUpdateOne) SetNillableDueDate(t *time.Time) *TaskUpdateOne {
 	return tuo
 }
 
-// ClearDueDate clears the value of the "due_date" field.
-func (tuo *TaskUpdateOne) ClearDueDate() *TaskUpdateOne {
-	tuo.mutation.ClearDueDate()
-	return tuo
-}
-
 // SetStatus sets the "status" field.
-func (tuo *TaskUpdateOne) SetStatus(t task.Status) *TaskUpdateOne {
-	tuo.mutation.SetStatus(t)
+func (tuo *TaskUpdateOne) SetStatus(i int) *TaskUpdateOne {
+	tuo.mutation.ResetStatus()
+	tuo.mutation.SetStatus(i)
 	return tuo
 }
 
 // SetNillableStatus sets the "status" field if the given value is not nil.
-func (tuo *TaskUpdateOne) SetNillableStatus(t *task.Status) *TaskUpdateOne {
-	if t != nil {
-		tuo.SetStatus(*t)
+func (tuo *TaskUpdateOne) SetNillableStatus(i *int) *TaskUpdateOne {
+	if i != nil {
+		tuo.SetStatus(*i)
 	}
+	return tuo
+}
+
+// AddStatus adds i to the "status" field.
+func (tuo *TaskUpdateOne) AddStatus(i int) *TaskUpdateOne {
+	tuo.mutation.AddStatus(i)
 	return tuo
 }
 
 // SetUserID sets the "user_id" field.
 func (tuo *TaskUpdateOne) SetUserID(i int) *TaskUpdateOne {
+	tuo.mutation.ResetUserID()
 	tuo.mutation.SetUserID(i)
 	return tuo
 }
@@ -333,20 +334,41 @@ func (tuo *TaskUpdateOne) SetNillableUserID(i *int) *TaskUpdateOne {
 	return tuo
 }
 
-// SetUser sets the "user" edge to the User entity.
-func (tuo *TaskUpdateOne) SetUser(u *User) *TaskUpdateOne {
-	return tuo.SetUserID(u.ID)
+// AddUserID adds i to the "user_id" field.
+func (tuo *TaskUpdateOne) AddUserID(i int) *TaskUpdateOne {
+	tuo.mutation.AddUserID(i)
+	return tuo
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (tuo *TaskUpdateOne) SetUpdatedAt(t time.Time) *TaskUpdateOne {
+	tuo.mutation.SetUpdatedAt(t)
+	return tuo
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (tuo *TaskUpdateOne) SetDeletedAt(t time.Time) *TaskUpdateOne {
+	tuo.mutation.SetDeletedAt(t)
+	return tuo
+}
+
+// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
+func (tuo *TaskUpdateOne) SetNillableDeletedAt(t *time.Time) *TaskUpdateOne {
+	if t != nil {
+		tuo.SetDeletedAt(*t)
+	}
+	return tuo
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (tuo *TaskUpdateOne) ClearDeletedAt() *TaskUpdateOne {
+	tuo.mutation.ClearDeletedAt()
+	return tuo
 }
 
 // Mutation returns the TaskMutation object of the builder.
 func (tuo *TaskUpdateOne) Mutation() *TaskMutation {
 	return tuo.mutation
-}
-
-// ClearUser clears the "user" edge to the User entity.
-func (tuo *TaskUpdateOne) ClearUser() *TaskUpdateOne {
-	tuo.mutation.ClearUser()
-	return tuo
 }
 
 // Where appends a list predicates to the TaskUpdate builder.
@@ -364,6 +386,7 @@ func (tuo *TaskUpdateOne) Select(field string, fields ...string) *TaskUpdateOne 
 
 // Save executes the query and returns the updated Task entity.
 func (tuo *TaskUpdateOne) Save(ctx context.Context) (*Task, error) {
+	tuo.defaults()
 	return withHooks(ctx, tuo.sqlSave, tuo.mutation, tuo.hooks)
 }
 
@@ -389,6 +412,14 @@ func (tuo *TaskUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
+// defaults sets the default values of the builder before save.
+func (tuo *TaskUpdateOne) defaults() {
+	if _, ok := tuo.mutation.UpdatedAt(); !ok {
+		v := task.UpdateDefaultUpdatedAt()
+		tuo.mutation.SetUpdatedAt(v)
+	}
+}
+
 // check runs all checks and user-defined validators on the builder.
 func (tuo *TaskUpdateOne) check() error {
 	if v, ok := tuo.mutation.Title(); ok {
@@ -396,13 +427,10 @@ func (tuo *TaskUpdateOne) check() error {
 			return &ValidationError{Name: "title", err: fmt.Errorf(`ent: validator failed for field "Task.title": %w`, err)}
 		}
 	}
-	if v, ok := tuo.mutation.Status(); ok {
-		if err := task.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Task.status": %w`, err)}
+	if v, ok := tuo.mutation.Description(); ok {
+		if err := task.DescriptionValidator(v); err != nil {
+			return &ValidationError{Name: "description", err: fmt.Errorf(`ent: validator failed for field "Task.description": %w`, err)}
 		}
-	}
-	if tuo.mutation.UserCleared() && len(tuo.mutation.UserIDs()) > 0 {
-		return errors.New(`ent: clearing a required unique edge "Task.user"`)
 	}
 	return nil
 }
@@ -442,46 +470,29 @@ func (tuo *TaskUpdateOne) sqlSave(ctx context.Context) (_node *Task, err error) 
 	if value, ok := tuo.mutation.Description(); ok {
 		_spec.SetField(task.FieldDescription, field.TypeString, value)
 	}
-	if tuo.mutation.DescriptionCleared() {
-		_spec.ClearField(task.FieldDescription, field.TypeString)
-	}
 	if value, ok := tuo.mutation.DueDate(); ok {
 		_spec.SetField(task.FieldDueDate, field.TypeTime, value)
 	}
-	if tuo.mutation.DueDateCleared() {
-		_spec.ClearField(task.FieldDueDate, field.TypeTime)
-	}
 	if value, ok := tuo.mutation.Status(); ok {
-		_spec.SetField(task.FieldStatus, field.TypeEnum, value)
+		_spec.SetField(task.FieldStatus, field.TypeInt, value)
 	}
-	if tuo.mutation.UserCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   task.UserTable,
-			Columns: []string{task.UserColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	if value, ok := tuo.mutation.AddedStatus(); ok {
+		_spec.AddField(task.FieldStatus, field.TypeInt, value)
 	}
-	if nodes := tuo.mutation.UserIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   task.UserTable,
-			Columns: []string{task.UserColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(user.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	if value, ok := tuo.mutation.UserID(); ok {
+		_spec.SetField(task.FieldUserID, field.TypeInt, value)
+	}
+	if value, ok := tuo.mutation.AddedUserID(); ok {
+		_spec.AddField(task.FieldUserID, field.TypeInt, value)
+	}
+	if value, ok := tuo.mutation.UpdatedAt(); ok {
+		_spec.SetField(task.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if value, ok := tuo.mutation.DeletedAt(); ok {
+		_spec.SetField(task.FieldDeletedAt, field.TypeTime, value)
+	}
+	if tuo.mutation.DeletedAtCleared() {
+		_spec.ClearField(task.FieldDeletedAt, field.TypeTime)
 	}
 	_node = &Task{config: tuo.config}
 	_spec.Assign = _node.assignValues

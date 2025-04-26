@@ -53,7 +53,7 @@ func TestCreateTask(t *testing.T) {
 		// 結果の比較
 		if tt.wanterr == nil && goterr == nil {
 			// 正常
-			if diff := cmp.Diff(got, tt.want, cmpopts.IgnoreUnexported(ent.Task{}, ent.TaskEdges{})); diff != "" {
+			if diff := cmp.Diff(got, tt.want, cmpopts.IgnoreUnexported(ent.Task{})); diff != "" {
 				t.Errorf("[FAIL] return mismatch\n got = %v,\n want= %v\n", got, tt.want)
 			} else {
 				fmt.Println("OK")
@@ -106,7 +106,7 @@ func TestListTask(t *testing.T) {
 		// 結果の比較
 		if tt.wanterr == nil && goterr == nil {
 			// 正常
-			if diff := cmp.Diff(got, tt.want, cmpopts.IgnoreUnexported(ent.Task{}, ent.TaskEdges{})); diff != "" {
+			if diff := cmp.Diff(got, tt.want, cmpopts.IgnoreUnexported(ent.Task{})); diff != "" {
 				t.Errorf("[FAIL] return mismatch\n got = %v,\n want= %v\n", got, tt.want)
 			} else {
 				fmt.Println("OK")
@@ -167,7 +167,7 @@ func TestGetTaskById(t *testing.T) {
 		// 結果の比較
 		if tt.wanterr == nil && goterr == nil {
 			// 正常
-			if diff := cmp.Diff(got, tt.want, cmpopts.IgnoreUnexported(ent.Task{}, ent.TaskEdges{})); diff != "" {
+			if diff := cmp.Diff(got, tt.want, cmpopts.IgnoreUnexported(ent.Task{})); diff != "" {
 				t.Errorf("[FAIL] return mismatch\n got = %v,\n want= %v\n", got, tt.want)
 			} else {
 				fmt.Println("OK")
@@ -228,7 +228,7 @@ func TestUpdateTask(t *testing.T) {
 		// 結果の比較
 		if tt.wanterr == nil && goterr == nil {
 			// 正常
-			if diff := cmp.Diff(got, tt.want, cmpopts.IgnoreUnexported(ent.Task{}, ent.TaskEdges{})); diff != "" {
+			if diff := cmp.Diff(got, tt.want, cmpopts.IgnoreUnexported(ent.Task{})); diff != "" {
 				t.Errorf("[FAIL] return mismatch\n got = %v,\n want= %v\n", got, tt.want)
 			} else {
 				fmt.Println("OK")

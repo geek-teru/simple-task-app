@@ -5,8 +5,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/geek-teru/simple-task-app/db"
 	"github.com/geek-teru/simple-task-app/ent"
+	"github.com/geek-teru/simple-task-app/util/db"
 )
 
 var testClient *ent.Client

@@ -33,7 +33,7 @@ func (r *taskRepository) CreateTask(ctx context.Context, task *ent.Task) (*ent.T
 		SetTitle(task.Title).
 		SetDescription(task.Description).
 		SetStatus(task.Status).
-		SetDueDate(*task.DueDate).
+		SetDueDate(task.DueDate).
 		SetUserID(task.UserID).
 		Save(ctx)
 	if err != nil {
@@ -71,7 +71,7 @@ func (r *taskRepository) UpdateTask(ctx context.Context, task *ent.Task, taskid 
 		SetTitle(task.Title).
 		SetDescription(task.Description).
 		SetStatus(task.Status).
-		SetDueDate(*task.DueDate).
+		SetDueDate(task.DueDate).
 		SetUserID(task.UserID).
 		Save(ctx)
 	if err != nil {
