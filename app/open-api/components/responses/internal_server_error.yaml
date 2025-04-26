@@ -1,0 +1,10 @@
+description: サーバー内部でエラーが発生しました
+content:
+  application/json:
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          description: エラーメッセージ
+          example: "Internal server error"

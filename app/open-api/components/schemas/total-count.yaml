@@ -1,0 +1,7 @@
+type: object
+properties:
+  total_count:
+    type: integer
+    description: 全件数
+    example: 50
+

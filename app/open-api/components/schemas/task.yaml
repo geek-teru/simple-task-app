@@ -1,0 +1,48 @@
+type: object
+properties:
+  id:
+    type: integer
+    format: int64
+    description: タスクID
+    example: 1
+  name:
+    type: string
+    description: タイトル
+    example: Sample Task
+  description:
+    type: string
+    description: 内容
+  due_date:
+    type: string
+    format: date
+    description: 期限
+    example: "2025-01-01"
+  status:
+    type: integer
+    description: ステータス
+    example: 1
+    enum:
+      - 0
+      - 1
+      - 2
+      - 3
+    x-enum-varnames:
+      - NONE
+      - TODO
+      - IN_PROGRESS
+      - DONE
+  created_at:
+    type: string
+    format: date-time
+    description: 作成日時
+    example: "2025-01-01 12:34:56"
+  updated_at:
+    type: string
+    format: date-time
+    description: 更新日時
+    example: "2025-01-01 12:34:56"
+  deleted_at:
+    type: string
+    format: date-time
+    description: 削除日時
+    example: ""

@@ -1,0 +1,73 @@
+get:
+  tags:
+    - task
+  summary: タスク詳細を取得
+  parameters:
+    - name: id
+      in: path
+      required: true
+      description: タスクID
+      schema:
+        type: integer
+        format: int64
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/task.yaml"
+    "400":
+      $ref: "../components/responses/bad_request.yaml"
+    "500":
+      $ref: "../components/responses/internal_server_error.yaml"
+patch:
+  summary: タスクを更新
+  operationId: updatetask
+  tags:
+    - task
+  parameters:
+    - name: id
+      in: path
+      required: true
+      description: タスクID
+      schema:
+        type: integer
+        format: int64
+  requestBody:
+    required: false 
+    content:
+      application/json:
+        schema:
+          $ref: "../components/schemas/task-update.yaml"
+  responses:
+    "200":
+      description: タスクの更新に成功
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/task.yaml"
+    "400":
+      $ref: "../components/responses/bad_request.yaml"
+    "500":
+      $ref: "../components/responses/internal_server_error.yaml"
+delete:
+  summary: タスクを論理削除
+  operationId: deletetask
+  tags:
+    - task
+  parameters:
+    - name: id
+      in: path
+      required: true
+      description: タスクID
+      schema:
+        type: integer
+        format: int64
+  responses:
+    "200":
+      description: タスクの論理削除に成功
+    "400":
+      $ref: "../components/responses/bad_request.yaml"
+    "500":
+      $ref: "../components/responses/internal_server_error.yaml"

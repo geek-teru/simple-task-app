@@ -1,0 +1,10 @@
+description: リクエストの形式が不正です
+content:
+  application/json:
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          description: エラーメッセージ
+          example: "Invalid request format"

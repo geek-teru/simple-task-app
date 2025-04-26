@@ -46,13 +46,18 @@
   (1 row)
   ```
 
-  2. SELECT
+  2. テーブルのスキーマ確認
+  ```
+  docker exec -it postgres.local psql -U admin -d sampledb -c "\d users"
+  ```
+
+  3. SELECT
   ```
   docker exec -it postgres.local psql -U admin -d sampledb -c "select * from users;"
   ```
 
 ## ORM(ent)関連
-  ### entの設定
+  ### エンティティの作成
   1. Userエンティティの作成
     * `ent/schema/user.go` が作成される
   ```
