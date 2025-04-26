@@ -1,0 +1,24 @@
+openapi: "3.0.3"
+info:
+  title: simple task api
+  description: simple task api
+  version: "1.0.0"
+servers:
+  - url: http://localhost:8000
+    description: API Mock Server
+  - url: http://localhost:9000
+    description: Swagger UI Server
+paths:
+  /task/{id}:
+    $ref: "./paths/task-by-id.yaml"
+  /task:
+    $ref: "./paths/task.yaml"
+components:
+  schemas:
+    Task:
+      $ref: "./components/schemas/task.yaml"
+tags:
+  - name: user
+    description: ユーザー
+  - name: task
+    description: タスク

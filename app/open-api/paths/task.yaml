@@ -1,0 +1,89 @@
+get:
+  summary: タスク一覧を取得
+  operationId: listTasks
+  tags:
+    - task
+  parameters:
+    - name: user_id
+      in: query
+      description: agencies.id
+      required: false
+      schema:
+        type: integer
+      example: 1
+    - name: page
+      in: query
+      description: ページ番号
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+
+  responses:
+    "200":
+      description: タスク一覧の取得に成功
+      content:
+        application/json:
+          schema:
+            allOf:
+              - type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "../components/schemas/task.yaml"
+              - $ref: "../components/schemas/total-count.yaml"
+          example:
+            data:
+              - id: 1
+                name: "タスクA"
+                description: "タスクAの説明"
+                due_date: 2
+                status: 2
+                created_at: "2025-03-21 12:34:56"
+                updated_at: "2025-03-21 12:34:56"
+                deleted_at: null
+              - id: 2
+                name: "タスクB"
+                description: "タスクBの説明"
+                due_date: 2
+                status: 2
+                created_at: "2025-03-21 12:34:56"
+                updated_at: "2025-03-21 12:34:56"
+                deleted_at: null
+              - id: 3
+                name: "タスクB"
+                description: "タスクBの説明"
+                due_date: 2
+                status: 2
+                created_at: "2025-03-21 12:34:56"
+                updated_at: "2025-03-21 12:34:56"
+                deleted_at: null
+            total_count: 50
+    "400":
+      $ref: "../components/responses/bad_request.yaml"
+    "500":
+      $ref: "../components/responses/internal_server_error.yaml"
+post:
+  summary: タスクを作成
+  operationId: createTask
+  tags:
+    - task
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../components/schemas/task-create.yaml"
+  responses:
+    "200":
+      description: 広告主の作成に成功
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/task.yaml"
+    "400":
+      $ref: "../components/responses/bad_request.yaml"
+    "500":
+      $ref: "../components/responses/internal_server_error.yaml"

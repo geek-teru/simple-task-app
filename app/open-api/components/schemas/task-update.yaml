@@ -1,0 +1,30 @@
+type: object
+properties:
+  name:
+    type: string
+    description: タイトル
+    example: Sample Task
+  description:
+    type: string
+    description: 内容
+  due_date:
+    type: string
+    format: date
+    description: 期限
+    example: "2025-01-01"
+  status:
+    type: integer
+    description: ステータス
+    example: 1
+    enum:
+      - 0
+      - 1
+      - 2
+      - 3
+    x-enum-varnames:
+      - NONE
+      - TODO
+      - IN_PROGRESS
+      - DONE
+required:
+  - name
