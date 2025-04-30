@@ -1,0 +1,78 @@
+name: terraform-plan
+run-name: terraform-plan
+
+on:
+  pull_request:
+    branches: 
+      - main
+    paths:
+      - 'terraform/**'
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        description: 'target environment'
+        required: true
+        options:
+          - dev
+          - stg
+          - prd
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:  
+  plan:
+    runs-on: ubuntu-latest    
+    
+    defaults:
+      run:
+        working-directory: infrastructure/terraform/environments/${{ inputs.environment }}
+    
+    # strategy:
+    #   matrix:
+    #     env:
+    #      - dev
+    #      - stg
+    #      - prd
+    #     include:
+    #       - env: dev
+    #         role_to_assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_CICD_ROLE_NAME }}
+    #       - env: stg
+    #         role_to_assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_CICD_ROLE_NAME }}
+    #       - env: prd
+    #         role_to_assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_CICD_ROLE_NAME }}
+
+    env:
+      AWS_REGION: ap-northeast-1
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: AWS login
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_CICD_ROLE_NAME }}
+          aws-region: ${{ env.AWS_REGION }}
+      
+      - uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.6.6
+
+      - name: terraform fmt
+        run: terraform fmt -check -recursive
+        id: fmt
+
+      - name: terraform init
+        run: terraform init -input=false
+        id: init
+
+      - name: terraform validate
+        run: terraform validate -no-color
+        id: validate
+
+      - name: terraform plan
+        run: terraform plan -no-color -input=false
+        id: plan

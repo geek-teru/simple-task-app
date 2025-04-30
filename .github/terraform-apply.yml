@@ -1,0 +1,58 @@
+name: terraform-apply
+run-name: terraform-apply - ${{ inputs.environment }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        description: 'target environment'
+        required: true
+        options:
+          - dev
+          - stg
+          - prd
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs: 
+  apply:
+    # only master branch
+    if: ${{ github.ref == 'refs/heads/master' }}
+    
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: terraform/environments/${{ inputs.environment }}
+    
+    env:
+      AWS_REGION: ap-northeast-1
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: AWS login
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_CICD_ROLE_NAME }}
+          aws-region: ${{ env.AWS_REGION }}
+      
+      - uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.6.6
+
+      - name: terraform init
+        run: terraform init -input=false
+        id: init
+
+      - name: terraform validate
+        run: terraform validate -no-color
+        id: validate
+
+      - name: terraform apply
+        run: terraform apply -auto-approve -no-color -input=false
+        id: apply
