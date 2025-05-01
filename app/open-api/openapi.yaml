@@ -14,9 +14,18 @@ paths:
   /task:
     $ref: "./paths/task.yaml"
 components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
-    Task:
-      $ref: "./components/schemas/task.yaml"
+    TaskRequest:
+      $ref: "./components/schemas/task-request.yaml"
+    TaskResponse:
+      $ref: "./components/schemas/task-response.yaml"
+    TaskListResponse:
+      $ref: "./components/schemas/task-list-response.yaml"
 tags:
   - name: user
     description: ユーザー

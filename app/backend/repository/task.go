@@ -43,7 +43,7 @@ func (r *taskRepository) CreateTask(ctx context.Context, task *ent.Task) (*ent.T
 }
 
 func (r *taskRepository) ListTask(ctx context.Context, userid int, offset int, limit int) ([]*ent.Task, error) {
-	tasks, err := r.client.Task.Query().
+	gottasks, err := r.client.Task.Query().
 		Where(task.UserIDEQ(userid)).
 		Order(ent.Asc(task.FieldID)).
 		Offset(offset).
@@ -52,7 +52,7 @@ func (r *taskRepository) ListTask(ctx context.Context, userid int, offset int, l
 	if err != nil {
 		return nil, fmt.Errorf("[ERROR] failed to list tasks in repository: %w", err)
 	}
-	return tasks, nil
+	return gottasks, nil
 }
 
 func (r *taskRepository) GetTaskById(ctx context.Context, id int, userId int) (*ent.Task, error) {

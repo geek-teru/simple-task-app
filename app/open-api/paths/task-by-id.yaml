@@ -1,7 +1,10 @@
 get:
+  summary: タスク詳細を取得
+  operationId: gettask
   tags:
     - task
-  summary: タスク詳細を取得
+  security:
+    - BearerAuth: [] 
   parameters:
     - name: id
       in: path
@@ -16,7 +19,7 @@ get:
       content:
         application/json:
           schema:
-            $ref: "../components/schemas/task.yaml"
+            $ref: "../components/schemas/task-response.yaml"
     "400":
       $ref: "../components/responses/bad_request.yaml"
     "500":
@@ -26,6 +29,8 @@ patch:
   operationId: updatetask
   tags:
     - task
+  security:
+    - BearerAuth: [] 
   parameters:
     - name: id
       in: path
@@ -39,14 +44,14 @@ patch:
     content:
       application/json:
         schema:
-          $ref: "../components/schemas/task-update.yaml"
+          $ref: "../components/schemas/task-request.yaml"
   responses:
     "200":
       description: タスクの更新に成功
       content:
         application/json:
           schema:
-            $ref: "../components/schemas/task.yaml"
+            $ref: "../components/schemas/task-response.yaml"
     "400":
       $ref: "../components/responses/bad_request.yaml"
     "500":
@@ -56,6 +61,8 @@ delete:
   operationId: deletetask
   tags:
     - task
+  security:
+    - BearerAuth: [] 
   parameters:
     - name: id
       in: path
