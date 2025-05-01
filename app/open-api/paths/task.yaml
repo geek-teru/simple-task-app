@@ -3,6 +3,8 @@ get:
   operationId: listTasks
   tags:
     - task
+  security:
+    - BearerAuth: [] 
   parameters:
     - name: user_id
       in: query
@@ -26,14 +28,7 @@ get:
       content:
         application/json:
           schema:
-            allOf:
-              - type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: "../components/schemas/task.yaml"
-              - $ref: "../components/schemas/total-count.yaml"
+            - $ref: "../components/schemas/task-list-response.yaml"
           example:
             data:
               - id: 1
@@ -70,19 +65,21 @@ post:
   operationId: createTask
   tags:
     - task
+  security:
+    - BearerAuth: [] 
   requestBody:
     required: true
     content:
       application/json:
         schema:
-          $ref: "../components/schemas/task-create.yaml"
+          $ref: "../components/schemas/task-request.yaml"
   responses:
     "200":
       description: 広告主の作成に成功
       content:
         application/json:
           schema:
-            $ref: "../components/schemas/task.yaml"
+            $ref: "../components/schemas/task-response.yaml"
     "400":
       $ref: "../components/responses/bad_request.yaml"
     "500":
