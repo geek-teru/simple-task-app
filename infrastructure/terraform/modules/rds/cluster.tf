@@ -31,10 +31,10 @@ resource "aws_rds_cluster" "cluster" {
   engine             = "aurora-postgresql"
   engine_version     = "16.6"
   database_name      = var.rds_config.database_name
-  port               = var.rds_config.port #5432 #todo
+  port               = var.rds_config.port
 
   ## general configurations
-  master_username             = var.rds_config.master_username #todo
+  master_username             = var.rds_config.master_username
   manage_master_user_password = true
   db_subnet_group_name        = aws_db_subnet_group.db_subnet_group.id
   vpc_security_group_ids      = var.rds_config.vpc_security_group_ids
