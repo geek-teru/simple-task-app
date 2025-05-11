@@ -1,0 +1,76 @@
+[
+  {
+    "name": "${service_name}",
+    "image": "${ecr_uri}:${ecr_image_tag}",
+    "cpu": 0,
+    "essential": true,
+    "environment": [
+      {
+        "name": "SYSTEM_ENV",
+        "value": "${system_env}"
+      },
+      {
+        "name": "SERVER_PORT",
+        "value": "8080"
+      },
+      {
+        "name": "LOG_LEVEL",
+        "value": "${log_level}"
+      },
+      {
+        "name": "DB_USER",
+        "value": "${db_user}"
+      },
+      {
+        "name": "DB_ADDR",
+        "value": "${db_addr}"
+      },
+      {
+        "name": "DB_PORT",
+        "value": "${db_port}"
+      },
+      {
+        "name": "DB_NAME",
+        "value": "${db_name}"
+      },
+      {
+        "name": "DB_MAX_OPEN_CONNECTIONS",
+        "value": "100"
+      },
+      {
+        "name": "DB_MAX_IDLE_CONNECTIONS",
+        "value": "10"
+      },
+      {
+        "name": "DB_CONN_MAX_LIFE_TIME_SEC",
+        "value": "3600"
+      }
+    ],
+    "secrets": [
+      {
+        "name": "DB_SECRET",
+        "valueFrom": "${aws_secretsmanager_secret_version_arn}"
+      }
+    ],
+    "portMappings": [
+      {
+        "containerPort": 8080,
+        "hostPort": 8080,
+        "protocol": "tcp"
+      }
+    ],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "/app/${service_name}",
+        "awslogs-region": "ap-northeast-1",
+        "awslogs-stream-prefix": "app"
+      }
+    },
+    "dockerLabels": {
+      "ecs_service_container_name": "${service_name}"
+    },
+    "volumesFrom": [],
+    "mountPoints": []
+  }
+]
