@@ -19,3 +19,13 @@ data "terraform_remote_state" "cmn_vpc" {
     region = "ap-northeast-1"
   }
 }
+
+data "terraform_remote_state" "log_ops" {
+  backend = "s3"
+
+  config = {
+    bucket = "dev-terraform-aws"
+    key    = "aws-log-ops/terraform.tfstate"
+    region = "ap-northeast-1"
+  }
+}

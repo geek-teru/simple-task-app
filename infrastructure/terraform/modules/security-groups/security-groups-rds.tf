@@ -14,7 +14,7 @@ resource "aws_vpc_security_group_ingress_rule" "redshift_sg_ingress_from_ecs" {
   from_port                    = 5432
   to_port                      = 5432
   ip_protocol                  = "tcp"
-  referenced_security_group_id = aws_security_group.ecs_sg.id
+  referenced_security_group_id = aws_security_group.rds_sg.id
   security_group_id            = aws_security_group.rds_sg.id
 }
 

@@ -62,9 +62,9 @@
     "logConfiguration": {
       "logDriver": "awslogs",
       "options": {
-        "awslogs-group": "/app/${service_name}",
+        "awslogs-group": "/ecs/${service_name}",
         "awslogs-region": "ap-northeast-1",
-        "awslogs-stream-prefix": "app"
+        "awslogs-stream-prefix": "ecs"
       }
     },
     "dockerLabels": {
