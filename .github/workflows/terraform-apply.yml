@@ -26,7 +26,7 @@ jobs:
     
     defaults:
       run:
-        working-directory: terraform/environments/${{ inputs.environment }}
+        working-directory: infrastructure/terraform/environments/${{ inputs.environment }}
     
     env:
       AWS_REGION: ap-northeast-1
