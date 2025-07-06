@@ -56,10 +56,10 @@ module "ecs_cluster" {
 # backend API Resources
 # ------------------------------------------
 module "alb_backend_api" {
-  source          = "../../modules/alb-backend-api"
+  source          = "../../modules/backend-api-alb"
   env             = var.env
   sys_name        = var.sys_name
-  service_name    = "backend-api"
+  service_name    = "api"
   certificate_arn = "arn:aws:acm:ap-northeast-1:775538353788:certificate/f0dfab13-4e9f-443c-bae9-67770b742683"
 
   alb = {
@@ -79,7 +79,7 @@ module "alb_backend_api" {
 }
 
 module "ecs_backend_api" {
-  source         = "../../modules/ecs-service-backend-api"
+  source         = "../../modules/backend-api-ecs-service"
   env            = var.env
   sys_name       = var.sys_name
   aws_account_id = data.aws_caller_identity.current.account_id
