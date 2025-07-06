@@ -4,8 +4,8 @@ resource "aws_route53_record" "route53_record" {
   type    = "A"
 
   alias {
-    name                   = aws_elb.public_alb.dns_name
-    zone_id                = aws_elb.public_alb.zone_id
+    name                   = aws_alb.public_alb.dns_name
+    zone_id                = aws_alb.public_alb.zone_id
     evaluate_target_health = true
   }
 }
