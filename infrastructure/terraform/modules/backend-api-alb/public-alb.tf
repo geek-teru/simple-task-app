@@ -1,4 +1,5 @@
 locals {
+  # <env>-task-app-backend-api
   full_service_name = "${var.env}-${var.sys_name}-${var.service_name}"
 }
 
