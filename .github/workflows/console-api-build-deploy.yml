@@ -1,4 +1,4 @@
-name: console-api-build-deploy
+name: backend-api-build-deploy
 on:
   workflow_dispatch:
     inputs:
@@ -23,8 +23,8 @@ jobs:
       SYSTEM_NAME: task-app
       AWS_REGION: ap-northeast-1
       CONTAINER_NAME: backend-api
-      DOCKER_CTX: ./dashboard/backend/apis
-      DOCKERFILE: ./dashboard/backend/apis/apps/console/Dockerfile
+      DOCKER_CTX: ./app/backend/
+      DOCKERFILE: ./app/backend/Dockerfile
 
     steps:
       - name: Checkout
