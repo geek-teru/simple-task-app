@@ -1,0 +1,72 @@
+name: console-api-build-deploy
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        type: choice
+        description: 'target env (production / staging / development)'
+        required: true
+        options:
+          - dev
+          - stg
+          - prd
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      SYSTEM_NAME: task-app
+      AWS_REGION: ap-northeast-1
+      CONTAINER_NAME: backend-api
+      DOCKER_CTX: ./dashboard/backend/apis
+      DOCKERFILE: ./dashboard/backend/apis/apps/console/Dockerfile
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set Environment Variables
+        run: |
+          ECR_REPOSITORY_NAME=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.CONTAINER_NAME }} 
+          echo "ECR_REPOSITORY_NAME=$ECR_REPOSITORY_NAME" >> $GITHUB_ENV
+
+          ECS_TASK_DEFINITION_NAME=${{ github.event.inputs.environment }}-${{ env.SYSTEM_NAME }}-${{ env.CONTAINER_NAME }}
+          echo "ECS_TASK_DEFINITION_NAME=$ECS_TASK_DEFINITION_NAME" >> $GITHUB_ENV
+
+          ECS_CLUSTER_NAME=${{ github.event.inputs.environment }}-${{ env.SYSTEM_NAME }}-cluster
+          echo "ECS_CLUSTER_NAME=$ECS_CLUSTER_NAME" >> $GITHUB_ENV
+
+          ECS_SERVICE_NAME=${{ github.event.inputs.environment }}-${{ env.SYSTEM_NAME }}-${{ env.CONTAINER_NAME }}
+          echo "ECS_SERVICE_NAME=$ECS_SERVICE_NAME" >> $GITHUB_ENV
+
+          ECS_TASK_DEFINITION=${{ github.event.inputs.environment }}-${{ env.SYSTEM_NAME }}-${{ env.CONTAINER_NAME }}
+          echo "ECS_TASK_DEFINITION=$ECS_TASK_DEFINITION" >> $GITHUB_ENV
+
+          SSM_PARAMETER_NAME=/${{ github.event.inputs.environment }}/ecs/${{ env.CONTAINER_NAME }}/release
+          echo "SSM_PARAMETER_NAME=$SSM_PARAMETER_NAME" >> $GITHUB_ENV
+
+      - name: AWS login
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/${{ secrets.AWS_CICD_ROLE_NAME }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: ECR login
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Set Image Tag
+        run: |
+          image_tag=$(TZ=Asia/Tokyo date +%Y%m%d-%H%M)
+          echo "IMAGE_TAG=${image_tag}" >> $GITHUB_ENV
+
+      - name: Build
+        uses: ./.github/actions/build
+
+      - name: Deploy
+        uses: ./.github/actions/deploy

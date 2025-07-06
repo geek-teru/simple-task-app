@@ -1,0 +1,12 @@
+name: Update Lambda function
+description: Update Lambda function
+
+runs:
+  using: composite
+  steps:
+    - name: Update Lambda function
+      run: |
+        aws lambda update-function-code \
+          --function-name ${{ env.LAMBDA_FUNCTION_NAME }} \
+          --image-uri ${{ env.ECR_REPOSITORY_NAME }}:${{ env.IMAGE_TAG }}
+      shell: bash

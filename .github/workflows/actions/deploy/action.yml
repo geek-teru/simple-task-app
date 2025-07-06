@@ -1,0 +1,31 @@
+name: Deploy ECS Container
+description: Deploy a new task to ECS
+
+runs:
+  using: composite
+  steps:
+    - name: Download current task definition
+      run: |
+        aws ecs describe-task-definition --task-definition ${{ env.ECS_TASK_DEFINITION_NAME }} --query taskDefinition > task-definition.json
+      shell: bash
+
+    - name: Render new task definition
+      id: new-task-definition
+      uses: aws-actions/amazon-ecs-render-task-definition@v1
+      with:
+        task-definition: ./task-definition.json
+        container-name: ${{ env.CONTAINER_NAME }}
+        image: ${{ env.ECR_REPOSITORY_NAME }}:${{ env.IMAGE_TAG }}
+
+    - name: Deploy new task
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+      with:
+        task-definition: ${{ steps.new-task-definition.outputs.task-definition }}
+        cluster: ${{ env.ECS_CLUSTER_NAME }}
+        service: ${{ env.ECS_SERVICE_NAME }}
+        wait-for-service-stability: false
+
+    - name: Update release tag
+      run: |
+        aws ssm put-parameter --name "${{ env.SSM_PARAMETER_NAME }}" --value "${{ env.IMAGE_TAG }}" --type String --overwrite
+      shell: bash
