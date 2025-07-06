@@ -22,7 +22,7 @@ jobs:
     env:
       SYSTEM_NAME: task-app
       AWS_REGION: ap-northeast-1
-      CONTAINER_NAME: backend-api
+      SERVICE_NAME: backend-api
       DOCKER_CTX: ./app/backend/
       DOCKERFILE: ./app/backend/Dockerfile
 
@@ -32,20 +32,14 @@ jobs:
 
       - name: Set Environment Variables
         run: |
-          ECR_REPOSITORY_NAME=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.CONTAINER_NAME }} 
+          ECR_REPOSITORY_NAME=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ github.event.inputs.environment }}-${{ env.SYSTEM_NAME }}-${{ env.CONTAINER_NAME }} 
           echo "ECR_REPOSITORY_NAME=$ECR_REPOSITORY_NAME" >> $GITHUB_ENV
-
-          ECS_TASK_DEFINITION_NAME=${{ github.event.inputs.environment }}-${{ env.SYSTEM_NAME }}-${{ env.CONTAINER_NAME }}
-          echo "ECS_TASK_DEFINITION_NAME=$ECS_TASK_DEFINITION_NAME" >> $GITHUB_ENV
 
           ECS_CLUSTER_NAME=${{ github.event.inputs.environment }}-${{ env.SYSTEM_NAME }}-cluster
           echo "ECS_CLUSTER_NAME=$ECS_CLUSTER_NAME" >> $GITHUB_ENV
 
           ECS_SERVICE_NAME=${{ github.event.inputs.environment }}-${{ env.SYSTEM_NAME }}-${{ env.CONTAINER_NAME }}
           echo "ECS_SERVICE_NAME=$ECS_SERVICE_NAME" >> $GITHUB_ENV
-
-          ECS_TASK_DEFINITION=${{ github.event.inputs.environment }}-${{ env.SYSTEM_NAME }}-${{ env.CONTAINER_NAME }}
-          echo "ECS_TASK_DEFINITION=$ECS_TASK_DEFINITION" >> $GITHUB_ENV
 
           SSM_PARAMETER_NAME=/${{ github.event.inputs.environment }}/ecs/${{ env.CONTAINER_NAME }}/release
           echo "SSM_PARAMETER_NAME=$SSM_PARAMETER_NAME" >> $GITHUB_ENV

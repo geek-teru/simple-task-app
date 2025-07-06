@@ -6,7 +6,7 @@ runs:
   steps:
     - name: Download current task definition
       run: |
-        aws ecs describe-task-definition --task-definition ${{ env.ECS_TASK_DEFINITION_NAME }} --query taskDefinition > task-definition.json
+        aws ecs describe-task-definition --task-definition ${{ env.ECS_SERVICE_NAME }} --query taskDefinition > task-definition.json
       shell: bash
 
     - name: Render new task definition
