@@ -35,7 +35,7 @@ jobs:
           ECR_REPOSITORY_NAME=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ github.event.inputs.environment }}-${{ env.SYSTEM_NAME }}-${{ env.SERVICE_NAME }} 
           echo "ECR_REPOSITORY_NAME=$ECR_REPOSITORY_NAME" >> $GITHUB_ENV
 
-          ECS_CLUSTER_NAME=${{ github.event.inputs.environment }}-${{ env.SYSTEM_NAME }}-cluster
+          ECS_CLUSTER_NAME=${{ github.event.inputs.environment }}-${{ env.SYSTEM_NAME }}
           echo "ECS_CLUSTER_NAME=$ECS_CLUSTER_NAME" >> $GITHUB_ENV
 
           ECS_SERVICE_NAME=${{ github.event.inputs.environment }}-${{ env.SYSTEM_NAME }}-${{ env.SERVICE_NAME }}
