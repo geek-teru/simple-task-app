@@ -38,7 +38,7 @@ func GetConfig() (Config, error) {
 
 func GetDBConfig() (*DBConfig, error) {
 	dbconfig := &DBConfig{}
-	err := env.Parse(&dbconfig)
+	err := env.Parse(dbconfig)
 	if err != nil {
 		panic(err)
 	}
