@@ -1,0 +1,14 @@
+package: handler
+output: ../backend/handler/openapi.go
+generate:
+  echo-server: true
+  models: true
+output-options:
+  skip-prune: true
+  include-tags: 
+    - project
+    - task
+    - member
+  #  exclude-tags: []
+  # 略語は大文字にするキャメルケースに変換する
+  name-normalizer: ToCamelCaseWithInitialisms
