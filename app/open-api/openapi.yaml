@@ -20,13 +20,13 @@ paths:
     $ref: "./paths/projects.yaml"
   /projects/{id}:
     $ref: "./paths/projects_id.yaml"
-  /projects/{id}/members:
+  /projects/{project_id}/members:
     $ref: "./paths/members.yaml"
-  /projects/{id}/members/{id}:
+  /projects/{project_id}/members/{user_id}:
     $ref: "./paths/members_id.yaml"
-  /projects/{id}/tasks:
+  /projects/{project_id}/tasks:
     $ref: "./paths/tasks.yaml"
-  /projects/{id}/tasks/{id}:
+  /projects/{project_id}/tasks/{id}:
     $ref: "./paths/tasks_id.yaml"
 components:
   securitySchemes:
