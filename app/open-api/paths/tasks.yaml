@@ -1,0 +1,81 @@
+get:
+  summary: タスク一覧取得
+  operationId: listTasks
+  tags:
+    - task
+  security:
+    - BearerAuth: [] 
+  parameters:
+    - name: project_id
+      in: path
+      required: true
+      description: プロジェクトID
+      schema:
+        type: integer
+        format: int64
+    - name: page
+      in: query
+      description: ページ番号
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+  responses:
+    "200":
+      description: タスク一覧の取得に成功
+      content:
+        application/json:
+          schema:
+            allOf:
+              - type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "../components/schemas/task-response.yaml"
+              - $ref: '../components/responses/list-response.yaml'
+    "400":
+      $ref: "../components/responses/bad_request.yaml"
+    "401":
+      $ref: "../components/responses/unauthorized.yaml"
+    "404":
+      $ref: "../components/responses/not_found.yaml"
+    "500":
+      $ref: "../components/responses/internal_server_error.yaml"
+post:
+  summary: タスク作成
+  operationId: createTask
+  tags:
+    - task
+  security:
+    - BearerAuth: []
+  parameters:
+    - name: project_id
+      in: path
+      required: true
+      description: プロジェクトID
+      schema:
+        type: integer
+        format: int64
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../components/schemas/task-request.yaml"
+  responses:
+    "200":
+      description: タスクの作成に成功
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/task-response.yaml"
+    "400":
+      $ref: "../components/responses/bad_request.yaml"
+    "401":
+      $ref: "../components/responses/unauthorized.yaml"
+    "404":
+      $ref: "../components/responses/not_found.yaml"
+    "500":
+      $ref: "../components/responses/internal_server_error.yaml"

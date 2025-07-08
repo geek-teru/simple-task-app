@@ -1,0 +1,10 @@
+description: 無効な認証情報です
+content:
+  application/json:
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          description: エラーメッセージ
+          example: "Unauthorized error"

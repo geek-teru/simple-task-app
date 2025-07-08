@@ -1,0 +1,81 @@
+get:
+  summary: メンバー一覧を取得
+  operationId: listMembers
+  tags:
+    - member
+  security:
+    - BearerAuth: [] 
+  parameters:
+    - name: project_id
+      in: path
+      required: true
+      description: プロジェクトID
+      schema:
+        type: integer
+        format: int64
+    - name: page
+      in: query
+      description: ページ番号
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+  responses:
+    "200":
+      description: メンバー一覧の取得に成功
+      content:
+        application/json:
+          schema:
+            allOf:
+              - type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "../components/schemas/member-response.yaml"
+              - $ref: '../components/responses/list-response.yaml'
+    "400":
+      $ref: "../components/responses/bad_request.yaml"
+    "401":
+      $ref: "../components/responses/unauthorized.yaml"
+    "404":
+      $ref: "../components/responses/not_found.yaml"
+    "500":
+      $ref: "../components/responses/internal_server_error.yaml"
+post:
+  summary: メンバーを追加
+  operationId: createMember
+  tags:
+    - member
+  security:
+    - BearerAuth: []
+  parameters:
+    - name: project_id
+      in: path
+      required: true
+      description: プロジェクトID
+      schema:
+        type: integer
+        format: int64
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../components/schemas/member-request.yaml"
+  responses:
+    "200":
+      description: 広告主の作成に成功
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/member-response.yaml"
+    "400":
+      $ref: "../components/responses/bad_request.yaml"
+    "401":
+      $ref: "../components/responses/unauthorized.yaml"
+    "404":
+      $ref: "../components/responses/not_found.yaml"
+    "500":
+      $ref: "../components/responses/internal_server_error.yaml"

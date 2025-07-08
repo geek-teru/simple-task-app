@@ -1,0 +1,89 @@
+get:
+  summary: プロジェクト取得
+  tags:
+    - project
+  description: 指定されたIDのプロジェクトを取得します
+  operationId: getProject
+  parameters:
+    - name: id
+      in: path
+      required: true
+      description: プロジェクトID
+      schema:
+        type: integer
+        format: int64
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/project-response.yaml"
+    "400":
+      $ref: "../components/responses/bad_request.yaml"
+    "401":
+      $ref: "../components/responses/unauthorized.yaml"
+    "404":
+      $ref: "../components/responses/not_found.yaml"
+    "500":
+      $ref: "../components/responses/internal_server_error.yaml"
+put:
+  summary: プロジェクト更新
+  tags:
+    - project
+  operationId: updateProject
+  description: 指定されたIDのプロジェクトを更新します
+  parameters:
+    - name: id
+      in: path
+      required: true
+      description: プロジェクトID
+      schema:
+        type: integer
+        format: int64
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../components/schemas/project-request.yaml"
+  responses:
+    "200":
+      description: 更新成功
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/project-response.yaml"
+    "400":
+      $ref: "../components/responses/bad_request.yaml"
+    "401":
+      $ref: "../components/responses/unauthorized.yaml"
+    "404":
+      $ref: "../components/responses/not_found.yaml"
+    "500":
+      $ref: "../components/responses/internal_server_error.yaml"
+delete:
+  summary: プロジェクト削除
+  tags:
+    - project
+  operationId: deleteProject
+  description: 指定されたIDのプロジェクトを論理削除します
+  parameters:
+    - name: id
+      in: path
+      required: true
+      description: プロジェクトID
+      schema:
+        type: integer
+        format: int64
+  responses:
+    "204":
+      description: 削除成功
+    "400":
+      $ref: "../components/responses/bad_request.yaml"
+    "401":
+      $ref: "../components/responses/unauthorized.yaml"
+    "404":
+      $ref: "../components/responses/not_found.yaml"
+    "500":
+      $ref: "../components/responses/internal_server_error.yaml"

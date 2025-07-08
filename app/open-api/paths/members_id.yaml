@@ -1,0 +1,33 @@
+delete:
+  summary: メンバーを論理削除
+  operationId: deleteMember
+  tags:
+    - member
+  security:
+    - BearerAuth: [] 
+  parameters:
+    - name: project_id
+      in: path
+      required: true
+      description: プロジェクトID
+      schema:
+        type: integer
+        format: int64
+    - name: user_id
+      in: path
+      required: true
+      description: ユーザーID
+      schema:
+        type: integer
+        format: int64
+  responses:
+    "204":
+      description: メンバーの論理削除に成功
+    "400":
+      $ref: "../components/responses/bad_request.yaml"
+    "401":
+      $ref: "../components/responses/unauthorized.yaml"
+    "404":
+      $ref: "../components/responses/not_found.yaml"
+    "500":
+      $ref: "../components/responses/internal_server_error.yaml"

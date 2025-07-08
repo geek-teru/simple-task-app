@@ -1,0 +1,7 @@
+type: object
+properties:
+  count:
+    type: integer
+    format: int64
+    description: 件数
+    example: 50

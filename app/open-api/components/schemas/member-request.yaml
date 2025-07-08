@@ -1,0 +1,15 @@
+type: object
+properties:
+  project_id:
+    type: integer
+    format: int64
+    description: プロジェクトID
+    example: 1
+  user_id:
+    type: integer
+    format: int64
+    description: ユーザーID
+    example: 1
+required:
+  - project_id
+  - user_id
