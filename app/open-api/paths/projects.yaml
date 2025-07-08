@@ -1,0 +1,62 @@
+get:
+  summary: プロジェクト一覧取得
+  operationId: listProjects
+  tags:
+    - project
+  security:
+    - BearerAuth: [] 
+  parameters:
+    - name: page
+      in: query
+      description: ページ番号
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+  responses:
+    "200":
+      description: プロジェクト一覧の取得に成功
+      content:
+        application/json:
+          schema:
+            allOf:
+              - type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "../components/schemas/project-response.yaml"
+              - $ref: '../components/responses/list-response.yaml'
+    "400":
+      $ref: "../components/responses/bad_request.yaml"
+    "401":
+      $ref: "../components/responses/unauthorized.yaml"
+    "500":
+      $ref: "../components/responses/internal_server_error.yaml"
+post:
+  summary: プロジェクト作成
+  operationId: createProject
+  tags:
+    - project
+  security:
+    - BearerAuth: [] 
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: "../components/schemas/project-request.yaml"
+  responses:
+    "200":
+      description: プロジェクトの作成に成功
+      content:
+        application/json:
+          schema:
+            $ref: "../components/schemas/project-response.yaml"
+    "400":
+      $ref: "../components/responses/bad_request.yaml"
+    "401":
+      $ref: "../components/responses/unauthorized.yaml"
+    "500":
+      $ref: "../components/responses/internal_server_error.yaml"

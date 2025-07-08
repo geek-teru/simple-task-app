@@ -5,42 +5,13 @@ properties:
     format: int64
     description: タスクID
     example: 1
-  project_id:
-    type: integer
-    format: int64
-    description: プロジェクトID
-    example: 1
-  assignee_id:
-    type: integer
-    format: int64
-    description: 担当者のユーザーID
-    example: 1
-  title:
+  name:
     type: string
-    description: タイトル
-    example: Task_A
+    description: プロジェクト名
+    example: Project_A
   description:
     type: string
     description: 説明
-  due_date:
-    type: string
-    format: date-time
-    description: 期限
-    example: "2025-01-01T00:00:00Z"
-  status:
-    type: integer
-    description: ステータス
-    example: 1
-    enum:
-      - 0
-      - 1
-      - 2
-      - 3
-    x-enum-varnames:
-      - NONE
-      - TODO
-      - DOING
-      - DONE
   creator_id:
     type: integer
     format: int64

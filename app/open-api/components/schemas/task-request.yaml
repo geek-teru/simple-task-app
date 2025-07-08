@@ -1,17 +1,27 @@
 type: object
 properties:
-  name:
+  project_id:
+    type: integer
+    format: int64
+    description: プロジェクトID
+    example: 1
+  assignee_id:
+    type: integer
+    format: int64
+    description: 担当者のユーザーID
+    example: 1
+  title:
     type: string
     description: タイトル
-    example: Sample Task
+    example: Task_A
   description:
     type: string
-    description: 内容
+    description: 説明
   due_date:
     type: string
-    format: date
+    format: date-time
     description: 期限
-    example: "2025-01-01"
+    example: "2025-01-01T00:00:00Z"
   status:
     type: integer
     description: ステータス
@@ -24,7 +34,7 @@ properties:
     x-enum-varnames:
       - NONE
       - TODO
-      - IN_PROGRESS
+      - DOING
       - DONE
 required:
-  - name
+  - title

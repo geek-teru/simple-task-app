@@ -1,7 +1,6 @@
 openapi: "3.0.3"
 info:
   title: simple task api
-  description: simple task api
   version: "1.0.0"
 servers:
   - url: http://localhost:8000
@@ -9,10 +8,26 @@ servers:
   - url: http://localhost:9000
     description: Swagger UI Server
 paths:
-  /task/{id}:
-    $ref: "./paths/task-by-id.yaml"
-  /task:
-    $ref: "./paths/task.yaml"
+  # /signup:
+  #   $ref: "./paths/signup.yaml"
+  # /signin:
+  #   $ref: "./paths/signin.yaml"
+  # /signout:
+  #   $ref: "./paths/signout.yaml"
+  # /users/{id}/password:
+  #   $ref: "./paths/users_password.yaml"
+  /projects:
+    $ref: "./paths/projects.yaml"
+  /projects/{id}:
+    $ref: "./paths/projects_id.yaml"
+  /projects/{id}/members:
+    $ref: "./paths/members.yaml"
+  /projects/{id}/members/{id}:
+    $ref: "./paths/members_id.yaml"
+  /projects/{id}/tasks:
+    $ref: "./paths/tasks.yaml"
+  /projects/{id}/tasks/{id}:
+    $ref: "./paths/tasks_id.yaml"
 components:
   securitySchemes:
     BearerAuth:
@@ -20,14 +35,22 @@ components:
       scheme: bearer
       bearerFormat: JWT
   schemas:
+    ProjectRequest:
+      $ref: "./components/schemas/project-request.yaml"
+    ProjectResponse:
+      $ref: "./components/schemas/project-response.yaml"
     TaskRequest:
       $ref: "./components/schemas/task-request.yaml"
     TaskResponse:
       $ref: "./components/schemas/task-response.yaml"
-    TaskListResponse:
-      $ref: "./components/schemas/task-list-response.yaml"
+    MemberRequest:
+      $ref: "./components/schemas/member-request.yaml"
+    MemberResponse:
+      $ref: "./components/schemas/member-response.yaml"
 tags:
-  - name: user
-    description: ユーザー
+  - name: project
+    description: プロジェクト
   - name: task
     description: タスク
+  - name: member
+    description: プロジェクトメンバー

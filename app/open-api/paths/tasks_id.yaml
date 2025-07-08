@@ -1,11 +1,17 @@
 get:
-  summary: タスク詳細を取得
-  operationId: gettask
+  summary: タスク取得
   tags:
     - task
-  security:
-    - BearerAuth: [] 
+  description: 指定されたIDのタスクを取得します
+  operationId: getTask
   parameters:
+    - name: project_id
+      in: path
+      required: true
+      description: プロジェクトID
+      schema:
+        type: integer
+        format: int64
     - name: id
       in: path
       required: true
@@ -22,16 +28,26 @@ get:
             $ref: "../components/schemas/task-response.yaml"
     "400":
       $ref: "../components/responses/bad_request.yaml"
+    "401":
+      $ref: "../components/responses/unauthorized.yaml"
+    "404":
+      $ref: "../components/responses/not_found.yaml"
     "500":
       $ref: "../components/responses/internal_server_error.yaml"
-patch:
-  summary: タスクを更新
-  operationId: updatetask
+put:
+  summary: タスク更新
   tags:
     - task
-  security:
-    - BearerAuth: [] 
+  operationId: updateTask
+  description: 指定されたIDのタスクを更新します
   parameters:
+    - name: project_id
+      in: path
+      required: true
+      description: プロジェクトID
+      schema:
+        type: integer
+        format: int64
     - name: id
       in: path
       required: true
@@ -40,30 +56,40 @@ patch:
         type: integer
         format: int64
   requestBody:
-    required: false 
+    required: true
     content:
       application/json:
         schema:
           $ref: "../components/schemas/task-request.yaml"
   responses:
     "200":
-      description: タスクの更新に成功
+      description: 更新成功
       content:
         application/json:
           schema:
             $ref: "../components/schemas/task-response.yaml"
     "400":
       $ref: "../components/responses/bad_request.yaml"
+    "401":
+      $ref: "../components/responses/unauthorized.yaml"
+    "404":
+      $ref: "../components/responses/not_found.yaml"
     "500":
       $ref: "../components/responses/internal_server_error.yaml"
 delete:
-  summary: タスクを論理削除
-  operationId: deletetask
+  summary: タスク削除
   tags:
     - task
-  security:
-    - BearerAuth: [] 
+  operationId: deleteTask
+  description: 指定されたIDのタスクを論理削除します
   parameters:
+    - name: project_id
+      in: path
+      required: true
+      description: プロジェクトID
+      schema:
+        type: integer
+        format: int64
     - name: id
       in: path
       required: true
@@ -72,9 +98,13 @@ delete:
         type: integer
         format: int64
   responses:
-    "200":
-      description: タスクの論理削除に成功
+    "204":
+      description: 削除成功
     "400":
       $ref: "../components/responses/bad_request.yaml"
+    "401":
+      $ref: "../components/responses/unauthorized.yaml"
+    "404":
+      $ref: "../components/responses/not_found.yaml"
     "500":
       $ref: "../components/responses/internal_server_error.yaml"

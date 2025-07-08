@@ -1,0 +1,11 @@
+type: object
+properties:
+  name:
+    type: string
+    description: プロジェクト名
+    example: Project_A
+  description:
+    type: string
+    description: 説明
+required:
+  - name

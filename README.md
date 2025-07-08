@@ -27,9 +27,9 @@
 
 | 機能               | HTTP メソッド | パス                   | 備考                                 |
 | :----------------- | :------------ | :--------------------- | :----------------------------------- |
-| **サインアップ**   | `POST`        | `/users/signup`        | 新規ユーザー登録                     |
-| **サインイン**     | `POST`        | `/users/signin`        | ユーザー認証とセッショントークン発行 |
-| **サインアウト**   | `POST`        | `/users/signout`       | セッション破棄                       |
+| **サインアップ**   | `POST`        | `/signup`              | 新規ユーザー登録                     |
+| **サインイン**     | `POST`        | `/signin`              | ユーザー認証とセッショントークン発行 |
+| **サインアウト**   | `POST`        | `/signout`             | セッション破棄                       |
 | **パスワード変更** | `PUT`         | `/users/{id}/password` | 特定ユーザーのパスワード変更         |
 
 ---
@@ -84,9 +84,9 @@ erDiagram
         timestamp updated_at
         timestamp deleted_at
     }
-    ProjectUser {
-		    int user_id PK,FK "ユーザーID"
+    ProjectMember {
 		    int project_id PK,FK "プロジェクトID"
+		    int user_id PK,FK "ユーザーID"
     }
     Project {
 		    int id PK "プロジェクトID"
@@ -99,11 +99,12 @@ erDiagram
     Task {
         int id PK "タスクID"
         int project_id FK "プロジェクトID"
-        int user_id FK "ユーザーID"
+        int assignee_id FK "担当者のユーザーID"
         varchar(100) title "タイトル"
         varchar(255) description "説明"
-        date due_date "期限日"
-        int status "ステータス (e.g., NONE, TODO, IN_PROGRESS, DONE)"
+        timestamp due_date "期限日"
+        int status "ステータス (e.g., NONE, TODO, DOING, DONE)"
+        int creator_id "作成者のユーザーID"
         timestamp created_at
         timestamp updated_at
         timestamp deleted_at

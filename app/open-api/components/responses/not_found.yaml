@@ -1,0 +1,10 @@
+description: リソースが見つかりませんでした
+content:
+  application/json:
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          description: エラーメッセージ
+          example: "not found"
